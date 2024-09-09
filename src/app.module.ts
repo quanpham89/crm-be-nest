@@ -1,13 +1,32 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+// import { AppController } from '@app.controller';
+// import { AppService } from '@app.service';
+// import { UsersModule } from '@modules/users/users.module';
+import { UsersModule } from './modules/users/users.module';
+import { LikesModule } from './modules/likes/likes.module';
+import { MenuItemOptionsModule } from './modules/menu.item.options/menu.item.options.module';
+import { MenuItemsModule } from './modules/menu.items/menu.items.module';
+import { MenusModule } from './modules/menus/menus.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { OrderDetailModule } from './modules/order.detail/order.detail.module';
+import { RestaurantsModule } from './modules/restaurants/restaurants.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { AppController } from './app.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     UsersModule, 
+    LikesModule,
+    MenuItemOptionsModule,
+    ReviewsModule,
+    RestaurantsModule,
+    MenuItemsModule,
+    MenusModule,
+    OrderDetailModule,
+    OrdersModule,
     ConfigModule.forRoot({isGlobal: true}),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
