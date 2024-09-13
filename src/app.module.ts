@@ -72,5 +72,5 @@ import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars
     useClass: JwtAuthGuard
   }],
 })
-5:54
+// 5:54
 export class AppModule {}
