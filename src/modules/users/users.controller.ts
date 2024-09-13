@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { query } from 'express';
+import { Public } from '@/decorator/customize';
 
 @Controller('users')
 export class UsersController {
@@ -14,6 +15,7 @@ export class UsersController {
   }
 
   @Get()
+  @Public()
   findAll(
     @Query() query:string,
     @Query("current") current:string,

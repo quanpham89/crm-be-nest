@@ -16,7 +16,10 @@ import { AppController } from './app.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '@/auth/auth.module';
-
+import { APP_GUARD } from '@nestjs/core';
+import {JwtAuthGuard} from "@/auth/passport/jwt-auth.guard"
+import { MailerModule } from '@nestjs-modules/mailer';
+import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter"
 @Module({
   imports: [
     UsersModule, 
@@ -36,9 +39,38 @@ import { AuthModule } from '@/auth/auth.module';
       }),
       inject: [ConfigService],
     }),
-    AuthModule
+    MailerModule.forRoot({
+      transport: {
+        host: 'localhost',
+        port: 1025,
+        ignoreTLS: true,
+        secure: false,
+        auth: {
+          user: process.env.MAILDEV_INCOMING_USER,
+          pass: process.env.MAILDEV_INCOMING_PASS,
+        },
+      },
+      defaults: {
+        from: '"No Reply" <no-reply@localhost>',
+      },
+      preview: true,
+      template: {
+        dir: process.cwd() + '/template/',
+        adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+        options: {
+          strict: true,
+        },
+      },
+    }),
+    AuthModule 
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+    provide: APP_GUARD,
+    useClass: JwtAuthGuard
+  }],
 })
+5:54
 export class AppModule {}

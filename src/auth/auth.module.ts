@@ -5,7 +5,8 @@ import { UsersModule } from '@/modules/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from '@/passport/local.strategy';
+import { LocalStrategy } from '@/auth/passport/local.strategy';
+import { JwtStrategy } from '@/auth/passport/jwt.strategy';
 
 @Module({
   imports: [
@@ -23,6 +24,6 @@ import { LocalStrategy } from '@/passport/local.strategy';
     PassportModule
   ], // kết nối với các module khác
   controllers: [AuthController], // đăng kí controller của module
-  providers: [AuthService, LocalStrategy], // đăng kí service
+  providers: [AuthService, LocalStrategy, JwtStrategy], // đăng kí service
 })
 export class AuthModule {}
