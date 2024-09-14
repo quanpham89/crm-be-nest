@@ -10,9 +10,13 @@ import mongoose from 'mongoose';
 import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import {v4 as uuidv4} from "uuid"
 import dayjs from 'dayjs';
+import { MailerService } from '@nestjs-modules/mailer';
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>){}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly mailerService : MailerService
+  ){}
 
   isEmailExist = async (email: String ) => {
     let isExist = await this.userModel.exists({email})
@@ -82,6 +86,7 @@ export class UsersService {
 
   async handleRegister(registerDto: CreateAuthDto) {
     const { email, password, name} = registerDto
+    const codeId = uuidv4()
     // check exist
     const isExist = await this.isEmailExist(email)
     if(isExist){
@@ -92,14 +97,27 @@ export class UsersService {
     const hashPassword = await hashPaswwordHelper(password)
     const user = await this.userModel.create({
       name, email, password: hashPassword,
-      isActive: false , codeId: uuidv4(),
-      codeExpired: dayjs().add(30, "minutes")
+      isActive: false , codeId,
+      codeExpired: dayjs().add(5, "minutes")
     })
 
     //  response request
 
 
     // send email
+    this.mailerService.sendMail({
+      to: 'phamdinhquan202@gmail.com', // list of receivers
+      subject: "Activate your account", // Subject line
+      text: 'welcome', // plaintext body
+      template: "Register",
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: codeId,
+        
+      }
+    })
+    .then(() => {})
+    .catch(() => {});
     return {
       _id: user._id,
       codeId: user.codeId
