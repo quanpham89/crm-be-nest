@@ -39,28 +39,33 @@ import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars
       }),
       inject: [ConfigService],
     }),
-    MailerModule.forRoot({
-      transport: {
-        host: 'localhost',
-        port: 1025,
-        ignoreTLS: true,
-        secure: false,
-        auth: {
-          user: process.env.MAILDEV_INCOMING_USER,
-          pass: process.env.MAILDEV_INCOMING_PASS,
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 465,
+          // ignoreTLS: true,
+          secure: true,
+          auth: {
+            user: configService.get<string>('MAIL_USER'),
+            pass: configService.get<string>('MAIL_PASSWORD'),
+          },
         },
-      },
-      defaults: {
-        from: '"No Reply" <no-reply@localhost>',
-      },
-      preview: true,
-      template: {
-        dir: process.cwd() + '/template/',
-        adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
-        options: {
-          strict: true,
+        defaults: {
+          from: '"No Reply" <no-reply@localhost>',
         },
-      },
+        preview: true,
+        // template: {
+        //   dir: process.cwd() + '/template/',
+        //   adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+        //   options: {
+        //     strict: true,
+        //   },
+        // },
+      }),
+      inject: [ConfigService],
+      
     }),
     AuthModule 
   ],
