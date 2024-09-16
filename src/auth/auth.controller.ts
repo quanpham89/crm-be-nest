@@ -7,7 +7,6 @@ import { LocalAuthGuard } from '@/auth/passport/local.auth.gaurd';
 import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
 import { Public } from '@/decorator/customize';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { privateDecrypt } from 'crypto';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Controller('auth')
@@ -21,7 +20,6 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Public()
   handleLogin(@Request() req){
-    console.log(req.user)
     return this.authService.login(req.user)
   }
 

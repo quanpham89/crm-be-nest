@@ -1,3 +1,4 @@
+import { IsEmail } from 'class-validator';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/modules/users/users.service';
 import { comparePaswwordHelper } from '@/helpers/ulti';
@@ -20,8 +21,21 @@ export class AuthService {
 
   async login (user: any) {
      const payload = {sub: user._id, username: user.email}
+
     return {
-      access_token: await this.jwtService.signAsync(payload)
+      data : {
+        user:{
+          isVerify: user.isActive,
+          type: user.accountType,
+          email: user.email,
+          _id: user._id,
+          username: user.name,
+          active: user.isActive,
+          role: user.role
+        },
+
+        access_token: await this.jwtService.signAsync(payload)
+      }
     }
   }
   
