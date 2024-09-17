@@ -7,7 +7,7 @@ import {Model} from "mongoose"
 import { hashPaswwordHelper } from '@/helpers/ulti';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import {v4 as uuidv4} from "uuid"
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -90,7 +90,7 @@ export class UsersService {
     // check exist
     const isExist = await this.isEmailExist(email)
     if(isExist){
-      throw new BadRequestException(`Email ${email} đã tồn tại. Vui lòng sử dụng email khác.} `)
+      throw new BadRequestException(`Email ${email} đã tồn tại. Vui lòng sử dụng email khác. `)
     }
 
     // hashPassword
@@ -106,7 +106,7 @@ export class UsersService {
 
     // send email
     this.mailerService.sendMail({
-      to: 'phamdinhquan202@gmail.com', // list of receivers
+      to: 'admin@gmail.com', // list of receivers
       subject: "Activate your account", // Subject line
       text: 'welcome', // plaintext body
       template: "Register",
@@ -122,5 +122,32 @@ export class UsersService {
       _id: user._id,
       codeId: user.codeId
     }
+  }
+
+  async handleVerify(data : CodeAuthDto){
+    const user = await this.userModel.findOne({
+      _id: data._id,
+      codeId: data.code
+    })
+    if(!user) {
+      throw new BadRequestException("Mã code không hợp lệ hoặc đã hết hạn.")
+    }
+    // check expire code
+    const isBeforeCheck = dayjs().isBefore(user.codeExpired)
+    if(isBeforeCheck) {
+      // valid
+      await this.userModel.updateOne({
+        _id: data._id,
+        codeId: data.code
+      },{
+        isActive: true
+      })
+
+    }else{
+      throw new BadRequestException("Mã code không hợp lệ hoặc đã hết hạn.")
+    }
+    // return {
+      
+    // };
   }
 }
