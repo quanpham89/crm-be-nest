@@ -1,9 +1,10 @@
+import { UsersModule } from '@/modules/users/users.module';
 import { IsEmail } from 'class-validator';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/modules/users/users.service';
 import { comparePaswwordHelper } from '@/helpers/ulti';
 import { JwtService } from '@nestjs/jwt';
-import { CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
+import { changePasswordDto, CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
 @Injectable()
 export class AuthService {
 
@@ -46,5 +47,21 @@ export class AuthService {
     return await this.UsersService.handleVerify(data)
 
   }
+
+  reActiveAccount = async (email : string) =>{
+    return await this.UsersService.reActiveAccount(email)
+
+  }
+
+  resendPassword = async (email : string) =>{
+    return await this.UsersService.resendPassword(email)
+
+  }
+
+  changePassword = async (data : changePasswordDto) =>{
+    return await this.UsersService.changePassword(data)
+
+  }
+
   
 }

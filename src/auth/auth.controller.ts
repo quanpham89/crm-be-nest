@@ -6,7 +6,7 @@ import { Request } from '@nestjs/common';
 import { LocalAuthGuard } from '@/auth/passport/local.auth.gaurd';
 import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
 import { Public, ResponseMessage } from '@/decorator/customize';
-import { CreateAuthDto, CodeAuthDto } from './dto/create-auth.dto';
+import { CreateAuthDto, CodeAuthDto, changePasswordDto } from './dto/create-auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Controller('auth')
@@ -42,6 +42,26 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   verify(@Body() verifyDto : CodeAuthDto){
     return this.authService.handleVerify(verifyDto)
+  }
+
+  @Post("re-active")
+  @Public()
+  @UseGuards(JwtAuthGuard)
+  reActive(@Body("email") email : string){
+    return this.authService.reActiveAccount(email)
+  }
+
+  @Post("re-password")
+  @Public()
+  @UseGuards(JwtAuthGuard)
+  rePassword(@Body("email") email : string){
+    return this.authService.resendPassword(email)
+  }
+  @Post("change-password")
+  @Public()
+  @UseGuards(JwtAuthGuard)
+  changePassword(@Body() data : changePasswordDto){
+    return this.authService.changePassword(data)
   }
 
   @Get("mail")

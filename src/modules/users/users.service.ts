@@ -7,7 +7,7 @@ import {Model} from "mongoose"
 import { hashPaswwordHelper } from '@/helpers/ulti';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
-import { CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { changePasswordDto, CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import {v4 as uuidv4} from "uuid"
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -146,8 +146,120 @@ export class UsersService {
     }else{
       throw new BadRequestException("Mã code không hợp lệ hoặc đã hết hạn.")
     }
-    // return {
-      
-    // };
+    return {
+      _id: user._id
+    };
   }
+
+  async reActiveAccount (email : string) {
+    const user = await this.userModel.findOne({email})
+    if(!user){
+      throw new BadRequestException("Tài khoản không tồn tại.")
+    }
+    if(user.isActive){
+      throw new BadRequestException("Tài khoản đã được kích hoạt.")
+    }
+
+    // update user
+    const codeId = uuidv4()
+    await user.updateOne({
+      codeId,
+      codeExpired : dayjs().add(5,'minutes')
+    },{
+      isActive: true
+    })
+    // send email
+    this.mailerService.sendMail({
+      to: 'phamdinhquan202@gmail.com', // list of receivers
+      subject: "Activate your account", // Subject line
+      text: 'welcome', // plaintext body
+      template: "Register",
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: codeId,
+        
+      }
+    })
+    .then(() => {})
+    .catch(() => {});
+    return {
+      _id: user._id
+    }
+  }
+
+  async resendPassword (email : string) {
+    const user = await this.userModel.findOne({email})
+    if(!user){
+      throw new BadRequestException("Tài khoản không tồn tại.")
+    }
+
+    // update user
+    const codeId = uuidv4()
+    await user.updateOne({
+      codeId,
+      codeExpired : dayjs().add(5,'minutes')
+    },{
+      isActive: true
+    })
+    // send email
+    this.mailerService.sendMail({
+      to: 'phamdinhquan202@gmail.com', // list of receivers
+      subject: "Change your password", // Subject line
+      text: 'welcome', // plaintext body
+      template: "changePassword",
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: codeId,
+        
+      }
+    })
+    .then(() => {})
+    .catch(() => {});
+    return {
+      _id: user._id,
+      email: user.email
+    }
+  }
+
+
+  async changePassword (data : changePasswordDto) {
+    if(data.confirmPassword !== data.password){
+      throw new BadRequestException("Mật khẩu/ xác nhận mật khẩu không trùng khớp.")
+ 
+    }
+    const user = await this.userModel.findOne({email : data.email})
+    if(!user){
+      throw new BadRequestException("Tài khoản không tồn tại.")
+    }
+
+    // check expire code
+    const isBeforeCheck = dayjs().isBefore(user.codeExpired)
+    if(isBeforeCheck) {
+      const newPassword = await hashPaswwordHelper(data.password)
+      // valid
+      await this.userModel.updateOne({
+        password: newPassword,
+      },{
+        isActive: true
+      })
+
+    }else{
+      throw new BadRequestException("Mã code không hợp lệ hoặc đã hết hạn.")
+    }
+
+    
+    return {
+      _id: user._id,
+      email: user.email
+    }
+  }
+
+  
+
+
+
 }
+
+
+
+
