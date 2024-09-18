@@ -13,5 +13,11 @@ export class CreateUserDto {
 
     phone: string;
     address: string;
+    accountType: string;
+    role: string;
     image: string;
+    sex: string;
+    birthday: Date
+
+
 }

@@ -8,7 +8,7 @@ export type LikeDocument = HydratedDocument<Like>;
 
 @Schema({ timestamps: true })
 export class Like {
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Restaurant.name })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Restaurant })
     restaurant: mongoose.Schema.Types.ObjectId;
 
 }

@@ -23,10 +23,10 @@ export class User {
     @Prop()
     image: string;
 
-    @Prop({default: "USERS"})
+    @Prop({default: "USER"})
     role: string;
 
-    @Prop({default: "LOCAL"})
+    @Prop({default: "FREE"})
     accountType: string;
 
     @Prop({default: false})
@@ -37,6 +37,12 @@ export class User {
 
     @Prop()
     codeExpired: Date;
+
+    @Prop({default: "MALE"})
+    sex: Date;
+    
+    @Prop()
+    birthday: Date;
 
 }
 
