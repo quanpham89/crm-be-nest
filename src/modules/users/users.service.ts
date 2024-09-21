@@ -27,7 +27,8 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
 
 
-    const {name, email, password, phone, address, image, accountType, role, sex, birthday } = createUserDto
+    const {name, email, password, phone, address, image, accountType, role, sex, birthday, isActive } = createUserDto
+    console.log(createUserDto)
     // check exist
     const isExist = await this.isEmailExist(email)
     if(isExist){
@@ -46,10 +47,9 @@ export class UsersService {
 
   async findAll(query: string, current : number, pageSize: number) {
     const {filter, sort} = aqp(query);
+    console.log()
     if(filter.current ) delete filter.current;
     if(filter.pageSize ) delete filter.pageSize;
-
-
     if(!current) current = 1;
     if(!pageSize) pageSize = 10;
     const totalItems = (await this.userModel.find(filter)).length;
@@ -58,10 +58,11 @@ export class UsersService {
 
     const results = await this.userModel
     .find(filter)
+    .sort({ createdAt: -1 })
     .limit(pageSize)
     .skip(skip)
-    .select("-password")
-    .sort(sort as any)
+    .select("-password -updatedAt -codeExpired -codeId -createdAt -__v" )
+
     return {results, totalItems, totalPages};
   }
 
@@ -72,7 +73,7 @@ export class UsersService {
     return await this.userModel.findOne({email})
   }
 
-  async update( updateUserDto: UpdateUserDto) {
+  async updateUser( updateUserDto: UpdateUserDto) {
     return await this.userModel.updateOne({_id: updateUserDto._id}, {...updateUserDto})
   }
 
@@ -87,7 +88,7 @@ export class UsersService {
   }
 
   async handleRegister(registerDto: CreateAuthDto) {
-    const { email, password, name} = registerDto
+    const { email, password, name, isActive, role, phone, sex, accountType} = registerDto
     const codeId = uuidv4()
     // check exist
     const isExist = await this.isEmailExist(email)
@@ -99,12 +100,12 @@ export class UsersService {
     const hashPassword = await hashPaswwordHelper(password)
     const user = await this.userModel.create({
       name, email, password: hashPassword,
-      isActive: false , codeId,
+      isActive , codeId,
+      role, phone, sex, accountType,
       codeExpired: dayjs().add(5, "minutes")
     })
 
     //  response request
-
 
     // send email
     this.mailerService.sendMail({

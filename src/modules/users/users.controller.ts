@@ -29,9 +29,10 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @Patch()
+  @Patch("update")
+  @Public()
   update( @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+    return this.usersService.updateUser(updateUserDto);
   }
 
   @Delete(':id')

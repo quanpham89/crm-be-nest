@@ -29,7 +29,7 @@ export class User {
     @Prop({default: "FREE"})
     accountType: string;
 
-    @Prop({default: false})
+    @Prop({default: "false"})
     isActive: boolean;
 
     @Prop()
@@ -39,7 +39,7 @@ export class User {
     codeExpired: Date;
 
     @Prop({default: "MALE"})
-    sex: Date;
+    sex: string;
     
     @Prop()
     birthday: Date;

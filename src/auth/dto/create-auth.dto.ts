@@ -10,6 +10,30 @@ export class CreateAuthDto {
     @IsOptional()
     name: string;
 
+    @IsOptional()
+    phone: string;
+
+    @IsOptional()
+    address: string;
+
+    @IsOptional()
+    accountType: string;
+
+    @IsOptional()
+    role: string;
+
+    @IsOptional()
+    image: string;
+    
+    @IsOptional()
+    sex: string;
+    
+    @IsOptional()
+    birthday: Date
+
+    @IsOptional()
+    isActive: boolean
+
 }
 
 export class CodeAuthDto {
