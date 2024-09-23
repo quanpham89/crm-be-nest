@@ -35,6 +35,12 @@ export class UsersController {
     return this.usersService.updateUser(updateUserDto);
   }
 
+
+  @Patch('/delete/:id')
+  softDelete(@Param('id') id: string) {
+    return this.usersService.remove(id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);

@@ -16,10 +16,22 @@ export class Restaurant {
     address: string;
 
     @Prop()
-    email: string;
+    rating:number;
 
     @Prop()
-    rating: number;
+    description: string;
+
+    @Prop({default: null})
+    userId: string;
+
+    @Prop({default: null})
+    menuId: string;
+
+    @Prop({default: true})
+    isShow: boolean
+
+    @Prop({default: null})
+    image: string
 
 }
 

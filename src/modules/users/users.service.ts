@@ -25,10 +25,7 @@ export class UsersService {
 
 
   async create(createUserDto: CreateUserDto) {
-
-
     const {name, email, password, phone, address, image, accountType, role, sex, birthday, isActive } = createUserDto
-    console.log(createUserDto)
     // check exist
     const isExist = await this.isEmailExist(email)
     if(isExist){
@@ -47,7 +44,6 @@ export class UsersService {
 
   async findAll(query: string, current : number, pageSize: number) {
     const {filter, sort} = aqp(query);
-    console.log()
     if(filter.current ) delete filter.current;
     if(filter.pageSize ) delete filter.pageSize;
     if(!current) current = 1;
