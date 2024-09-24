@@ -1,13 +1,13 @@
 import { IsEmail, IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateRestaurantDto {
-    @IsNotEmpty({message: "Name không được để trống "})
-    name: string;
+    @IsNotEmpty({message: "Tên nhà hàng không được để trống "})
+    restaurantName: string;
 
-    @IsNotEmpty({message: "Phone không được để trống "})
+    @IsNotEmpty({message: "Điện thoại không được để trống "})
     phone: string;
 
-    @IsNotEmpty({message: "Address không được để trống "})
+    @IsNotEmpty({message: "Địa chỉ không được để trống "})
     address: string;
 
     @IsOptional()
@@ -27,4 +27,7 @@ export class CreateRestaurantDto {
 
     @IsOptional()
     isShow: boolean
+
+    @IsOptional()
+    productType: string
 }

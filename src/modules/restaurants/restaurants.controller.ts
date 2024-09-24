@@ -24,27 +24,27 @@ export class RestaurantsController {
     return this.restaurantsService.findAll(query, +current, +pageSize);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.restaurantsService.findOne(+id);
+  @Get('/get-retaurant-by-id')
+  @Public()
+  findOne(@Query("_id") _id: string) {
+    return this.restaurantsService.getAllRestaurants(_id);
   }
 
-  @Patch('update')
+  @Patch('/update')
   update(@Body() updateRestaurantDto: UpdateRestaurantDto) {
     return this.restaurantsService.updateRestaurant(updateRestaurantDto);
   }
 
-  @Patch("delete")
+  @Patch("/soft-delete")
   @Public()
   softDelete(
-    @Query() query:string,
     @Query("_id") _id:string
   ) {
     return this.restaurantsService.DeleteRestaurant(_id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.restaurantsService.remove(+id);
+  @Delete('/remove-restaurant')
+  remove( @Query("_id") _id:string) {
+    return this.restaurantsService.remove(_id);
   }
 }

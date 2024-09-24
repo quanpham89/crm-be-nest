@@ -24,6 +24,12 @@ export class UsersController {
     return this.usersService.findAll(query, +current, +pageSize);
   }
 
+  @Get("get-all-users")
+  @Public()
+  findAllIdUser() {
+    return this.usersService.findAllIdUser();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
@@ -36,13 +42,15 @@ export class UsersController {
   }
 
 
-  @Patch('/delete/:id')
-  softDelete(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @Patch('/soft-delete')
+  softDelete( 
+    @Query("_id") _id:string
+  ) {
+    return this.usersService.softDelete(_id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @Delete('/remove-user')
+  remove(@Query("_id") _id:string) {
+    return this.usersService.remove(_id);
   }
 }

@@ -6,13 +6,13 @@ export class UpdateRestaurantDto  {
     @IsNotEmpty({message: "_id không được để trống"})
     _id: string;
 
-    @IsNotEmpty({message: "Name không được để trống "})
-    name: string;
+    @IsNotEmpty({message: "Tên không được để trống "})
+    restaurantName: string;
 
-    @IsNotEmpty({message: "Phone không được để trống "})
+    @IsNotEmpty({message: "Số điện thoại không được để trống "})
     phone: string;
 
-    @IsNotEmpty({message: "Address không được để trống "})
+    @IsNotEmpty({message: "Địa chỉ không được để trống "})
     address: string;
 
     @IsOptional()
@@ -32,4 +32,7 @@ export class UpdateRestaurantDto  {
 
     @IsOptional()
     isShow: boolean
+
+    @IsOptional()
+    productType: string
 }

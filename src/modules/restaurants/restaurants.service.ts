@@ -3,7 +3,7 @@ import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { Restaurant } from './schemas/restaurant.schema';
 import { MailerService } from '@nestjs-modules/mailer';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
 
@@ -15,23 +15,22 @@ export class RestaurantsService {
     private readonly mailerService : MailerService
   ){}
 
-  isNameExist = async (name: String ) => {
-    let isExist = await this.RestaurantModel.exists({name})
+  isNameExist = async (restaurantName: String ) => {
+    let isExist = await this.RestaurantModel.exists({restaurantName})
     return isExist ? true :false
   }
   
   async create(createRestaurantDto: CreateRestaurantDto) {
-    const {phone, name, address, image, isShow, rating, description, menuId, userId} = createRestaurantDto
-
-    const isExist = await this.isNameExist(name)
+    const {phone, restaurantName, address, image, isShow, rating, description, menuId, userId, productType} = createRestaurantDto
+    const isExist = await this.isNameExist(restaurantName)
     if(isExist){
-      throw new BadRequestException(`Tên ${name} đã tồn tại. Vui lòng sử dụng tên khác. `)
+      throw new BadRequestException(`Tên ${restaurantName} đã tồn tại. Vui lòng sử dụng tên khác. `)
     }
     if(+rating < 0 || +rating >10){
       throw new BadRequestException(`Rating nhỏ/ lớn hơn giới hạn cho phép. Vui lòng nhập lại trong khoảng 0 đến 5`)
     }
     const Restaurant = await this.RestaurantModel.create({
-      phone, name, address, image, isShow, rating, description, menuId, userId
+      phone, restaurantName, address, image, isShow, rating, description, menuId, userId, productType
     })
 
     return {
@@ -39,9 +38,13 @@ export class RestaurantsService {
     };
   }
 
+  async getAllRestaurants (_id: string) {
+    const restaurants = await this.RestaurantModel.find({_id: _id}).populate('userId').exec(); 
+    return restaurants
+  }
+
   async findAll(query: string, current : number, pageSize: number) {
     const {filter, sort} = aqp(query);
-    console.log()
     if(filter.current ) delete filter.current;
     if(filter.pageSize ) delete filter.pageSize;
     if(!current) current = 1;
@@ -51,13 +54,25 @@ export class RestaurantsService {
     const skip = (current - 1) * (pageSize)
 
     const results = await this.RestaurantModel
-    .find({isShow: true}, filter)
+    .find( filter)
     .sort({ createdAt: -1 })
     .limit(pageSize)
     .skip(skip)
-    .select("-password -updatedAt -codeExpired -codeId -createdAt -__v" )
+    .select("-password -updatedAt -codeExpired -codeId -createdAt -__v" ) 
+    .populate({
+      path: "userId",
+      select : "_id name email phone"
+    }).exec()
 
-    return {results, totalItems, totalPages};
+    const formattedResults = results.map(restaurant => {
+      const { userId, ...rest } = restaurant.toObject(); 
+      return {
+          ...rest, 
+          user: userId
+      };
+  });
+
+    return {results: formattedResults, totalItems, totalPages};
   }
 
   findOne(id: number) {
@@ -68,8 +83,8 @@ export class RestaurantsService {
     return await this.RestaurantModel.updateOne({_id: updateRestaurantDto._id}, {...updateRestaurantDto})
   }
 
-  async DeleteRestaurant (id: string) {
-    return await this.RestaurantModel.updateOne({_id: id}, {
+  async DeleteRestaurant (_id: string) {
+    return await this.RestaurantModel.updateOne({_id: _id}, {
       isShow: false
     })
 
@@ -77,7 +92,13 @@ export class RestaurantsService {
 
   
 
-  remove(id: number) {
-    return `This action removes a #${id} restaurant`;
+  remove(_id: string) {
+    if(
+      mongoose.isValidObjectId(_id)){
+      // delete
+      return this.RestaurantModel.deleteOne({_id})
+    }else{
+      throw new BadRequestException("Id không hợp lệ")
+    }
   }
 }

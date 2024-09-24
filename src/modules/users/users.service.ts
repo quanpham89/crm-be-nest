@@ -62,6 +62,12 @@ export class UsersService {
     return {results, totalItems, totalPages};
   }
 
+  async findAllIdUser(){
+    const user = await this.userModel.find({}).select("_id name")
+    return user
+
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
@@ -71,6 +77,13 @@ export class UsersService {
 
   async updateUser( updateUserDto: UpdateUserDto) {
     return await this.userModel.updateOne({_id: updateUserDto._id}, {...updateUserDto})
+  }
+
+  async softDelete (_id: string) {
+    return await this.userModel.updateOne({_id: _id}, {
+      isActive: false
+    })
+
   }
 
   async remove(_id: string) {
