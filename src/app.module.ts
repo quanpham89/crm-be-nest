@@ -21,6 +21,8 @@ import {JwtAuthGuard} from "@/auth/passport/jwt-auth.guard"
 import { MailerModule } from '@nestjs-modules/mailer';
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter"
 import { TransformInterceptor } from './core/transform.interceptor';
+import { VouchersModule } from './modules/voucher/vouchers.module';
+import { VoucherItemsModule } from './modules/voucher.items/voucher.items.module';
 @Module({
   imports: [
     UsersModule, 
@@ -32,6 +34,8 @@ import { TransformInterceptor } from './core/transform.interceptor';
     MenusModule,
     OrderDetailModule,
     OrdersModule,
+    VouchersModule,
+    VoucherItemsModule,
     ConfigModule.forRoot({isGlobal: true}),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
