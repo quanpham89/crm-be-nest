@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { CreateVoucherDto } from './dto/create-voucher.dto';
+import { CreateVoucherDto, SearchVoucerDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { VouchersService } from './vouchers.service';
 import { Public } from '@/decorator/customize';
@@ -13,24 +13,43 @@ export class VouchersController {
     return this.vouchersService.create(createVoucherDto);
   }
 
-  @Get()
+  @Get("/12")
   findAll() {
     return this.vouchersService.findAll();
   }
 
+  @Get("")
+  findVoucherPerPage(
+    @Query() query:string,
+    @Query("current") current:string,
+    @Query("pageSize") pageSize:string,
+  ) {
+    return this.vouchersService.findVoucherPerPage(query, +current, +pageSize);
+  }
+
   @Get('/get-voucher-by-id')
-  @Public()
   getItemvoucherForVoucher(@Query("_id") _id: string) {
     return this.vouchersService.getItemvoucherForVoucher(_id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVoucherDto: UpdateVoucherDto) {
-    return this.vouchersService.update(+id, updateVoucherDto);
+  @Get('/search')
+  searchVoucher(@Body() searchVoucher : SearchVoucerDto) {
+    return this.vouchersService.searchVoucher(searchVoucher);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.vouchersService.remove(+id);
+  @Patch('/update')
+  update(@Body() updateVoucherDto: UpdateVoucherDto) {
+    return this.vouchersService.update(updateVoucherDto);
+  }
+
+  @Patch('/soft-delete')
+  softDelete(@Query("_id") _id: string) {
+    return this.vouchersService.softDelete(_id);
+  }
+
+
+  @Delete('remove')
+  remove(@Query('_id') _id: string) {
+    return this.vouchersService.remove(_id);
   }
 }

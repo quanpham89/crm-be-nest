@@ -20,15 +20,12 @@ export class VoucherItem {
 
     @Prop()
     itemUse_id: string;
-
-    @Prop()
-    customerId: string
     
     @Prop({default: null})
     voucherId: string;
 
     @Prop({default: null})
-    cusomerId: string;
+    customerId: string;
 
     @Prop({default: null})
     itemUserId: string;

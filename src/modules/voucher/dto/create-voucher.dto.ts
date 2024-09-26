@@ -23,3 +23,24 @@ export class CreateVoucherDto {
     @IsOptional()
     createdBy: string;
 }
+
+export class SearchVoucerDto{
+    @IsOptional()
+    nameVoucher: string;
+
+    @IsOptional()
+    _id: string;
+
+    @IsOptional()
+    type: string;
+
+    @IsOptional()
+    forAge: string;
+
+    @IsOptional()
+    startedTime: Date;
+
+    @IsOptional()
+    endedTime: Date;
+
+}
