@@ -59,8 +59,24 @@ export class VouchersService {
 }
 
   async getItemvoucherForVoucher(_id: string) {
-    const voucher = await this.VoucherModal.find({_id: _id}).populate('voucherItemId').exec(); 
-    return voucher
+    if(!_id ){
+      throw new BadRequestException(`Bạn cần có id để thực hiện lấy dữ liệu`);
+    }
+    const voucher = await this.VoucherModal.find({_id: _id})
+    .populate({
+      path: 'voucherItemId',
+      select: '-updatedAt -createdAt -__v' 
+    })
+    .select('-updatedAt -createdAt -__v')
+    .exec();
+    const formattedVoucher = voucher.map((item : any) => {
+      const { voucherItemId, ...rest } = item.toObject(); 
+      return {
+          ...rest, 
+          voucherItems: voucherItemId
+      };
+    })
+    return formattedVoucher
   }
 
   async searchVoucher (searchVoucher : SearchVoucerDto) {
@@ -118,9 +134,6 @@ export class VouchersService {
           voucherItems: voucherItemId
       };
   });
-    
-
-
     return {results: formattedResults, totalItems, totalPages};
   }
 
@@ -136,11 +149,15 @@ export class VouchersService {
     return await this.VoucherModal.updateOne({_id: _id }, {status: "HIDDEN"})
   }
 
-  remove(_id: string) {
+  async activeVoucher (_id : string) {
+    return await this.VoucherModal.updateOne({_id: _id }, {status: "PUBLIC"})
+  }
+
+  async remove(_id: string) {
     if(
       mongoose.isValidObjectId(_id)){
-      // delete
-      return this.VoucherModal.deleteOne({_id})
+        await this.VoucherItemsModal.deleteMany({voucherId: _id})
+        return await this.VoucherModal.deleteOne({_id})
     }else{
       throw new BadRequestException("Id không hợp lệ")
     }

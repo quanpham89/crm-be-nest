@@ -9,7 +9,7 @@ export type VoucherItemDocument = HydratedDocument<VoucherItem>;
 @Schema({ timestamps: true })
 export class VoucherItem {
     
-    @Prop({default: "USE"})
+    @Prop({default: "UNUSED"})
     status: string;
     
     @Prop()

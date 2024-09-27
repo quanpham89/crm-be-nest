@@ -47,6 +47,11 @@ export class VouchersController {
     return this.vouchersService.softDelete(_id);
   }
 
+  @Patch('/active-voucher')
+  activeVoucher(@Query("_id") _id: string) {
+    return this.vouchersService.activeVoucher(_id);
+  }
+
 
   @Delete('remove')
   remove(@Query('_id') _id: string) {
