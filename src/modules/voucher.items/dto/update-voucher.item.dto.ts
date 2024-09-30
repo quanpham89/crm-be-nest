@@ -16,5 +16,8 @@ export class UpdateVoucherItemDto extends PartialType(CreateVoucherItemDto) {
     codeId: string;
 
     @IsOptional()    
-    codeExpired: Date;
+    startedDate: Date
+
+    @IsOptional()    
+    endedDate : Date
 }

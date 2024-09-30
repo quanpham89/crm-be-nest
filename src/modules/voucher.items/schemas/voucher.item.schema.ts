@@ -16,11 +16,14 @@ export class VoucherItem {
     codeId: string;
 
     @Prop()
-    codeExpired: Date;
-
-    @Prop()
     itemUse_id: string;
     
+    @Prop()
+    startedDate: Date;
+
+    @Prop()
+    endedDate: Date;
+
     @Prop({default: null})
     voucherId: string;
 

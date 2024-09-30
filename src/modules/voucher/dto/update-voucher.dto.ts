@@ -12,4 +12,7 @@ export class UpdateVoucherDto  {
 
     @IsOptional()
     createdBy: string;
+
+    @IsOptional()
+    endedDate: Date;
 }

@@ -33,7 +33,10 @@ export class VouchersController {
   }
 
   @Get('/search')
-  searchVoucher(@Body() searchVoucher : SearchVoucerDto) {
+  searchVoucher(
+    @Query("searchValue") searchValue : string
+  ) {
+    let searchVoucher : SearchVoucerDto = JSON.parse(searchValue)
     return this.vouchersService.searchVoucher(searchVoucher);
   }
 

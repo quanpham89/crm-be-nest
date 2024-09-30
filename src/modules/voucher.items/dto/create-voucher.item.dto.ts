@@ -14,6 +14,9 @@ export class CreateVoucherItemDto {
     codeId: string;
 
     @IsOptional()    
-    codeExpired: Date;
+    startedDate: Date
+
+    @IsOptional()    
+    endedDate : Date
     
 }

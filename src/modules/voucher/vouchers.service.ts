@@ -25,7 +25,7 @@ export class VouchersService {
   }
 
   async create(createVoucherDto: CreateVoucherDto) {
-    const { nameVoucher, amount, description, type, forAge, status } = createVoucherDto;
+    const { nameVoucher, amount, description, type, forAge, status, endedDate, startedDate } = createVoucherDto;
 
     const isExist = await this.isNameExist(nameVoucher);
     if (isExist) {
@@ -33,7 +33,7 @@ export class VouchersService {
     }
 
     const vouchers = await this.VoucherModal.create({
-        nameVoucher, amount, description, type, forAge, status
+        nameVoucher, amount, description, type, forAge, status, endedDate, startedDate
     });
 
     let voucherItemIdArray = [];
@@ -41,10 +41,10 @@ export class VouchersService {
     for (let i = 0; i < +amount; i++) {
         const codeId = uuidv4();
         const voucherItem = await this.VoucherItemsModal.create({
-            status: "USED",
+            status: "UNUSED",
             voucherId: vouchers._id,
             codeId,
-            codeExpired: dayjs().add(10, 'days'), 
+            endedDate, startedDate
         });
         voucherItemIdArray.push(voucherItem._id);
     }
@@ -71,9 +71,11 @@ export class VouchersService {
     .exec();
     const formattedVoucher = voucher.map((item : any) => {
       const { voucherItemId, ...rest } = item.toObject(); 
+      voucherItemId.startedDate = item.startedDate
+      voucherItemId.endedDate = item.endedDate
       return {
           ...rest, 
-          voucherItems: voucherItemId
+          voucherItems: voucherItemId,
       };
     })
     return formattedVoucher
@@ -81,7 +83,7 @@ export class VouchersService {
 
   async searchVoucher (searchVoucher : SearchVoucerDto) {
     const {nameVoucher, _id, type, forAge, endedTime, startedTime} = searchVoucher
-    if(!nameVoucher  &&!_id  && !type ===null && !forAge  && !endedTime ===null && !startedTime ){
+    if(!nameVoucher  && !_id  && !type && !forAge  && !endedTime && !startedTime ){
       throw new BadRequestException(`Bạn cần có ít nhất 1 giá trị để thực hiện tìm kiếm`);
     }
     const query: any = {};
@@ -95,8 +97,7 @@ export class VouchersService {
         $lte: endedTime ? new Date(endedTime) : new Date(startedTime)
       }
     }
-
-    const vouchers = await this.VoucherModal.find(query)
+    const vouchers = await this.VoucherModal.find({...query})
     return {
       vouchers
     }
