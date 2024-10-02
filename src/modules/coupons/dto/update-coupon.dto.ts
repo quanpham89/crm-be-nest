@@ -1,11 +1,13 @@
-import { IsEmail, IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateCouponDto } from './create-coupon.dto';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class UpdateVoucherDto  {
+export class UpdateCouponDto extends PartialType(CreateCouponDto) {
     @IsNotEmpty({message: "_id không đươc để trống"})
     _id: string;
 
     @IsOptional()
-    nameVoucher: string;
+    nameCoupon: string;
 
     @IsOptional()
     status: string;

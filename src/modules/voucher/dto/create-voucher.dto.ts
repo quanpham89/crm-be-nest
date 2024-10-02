@@ -23,11 +23,14 @@ export class CreateVoucherDto {
     @IsOptional()
     createdBy: string;
 
-    @IsOptional({message: "Ngày bắt đầu có hiệu lực không được để trống"})
+    @IsNotEmpty({message: "Ngày bắt đầu có hiệu lực không được để trống"})
     endedDate: Date;
 
-    @IsOptional({message: "Ngày kết thúc không được để trống"})
+    @IsNotEmpty({message: "Ngày kết thúc không được để trống"})
     startedDate: Date;
+
+    @IsNotEmpty({message: "id người tạo không được để trống"})
+    userCreateId: Date;
 }
 
 export class SearchVoucerDto{

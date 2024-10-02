@@ -1,22 +1,15 @@
-// import { Menu } from '@/modules/menus/schemas/menu.schema';
-
-import { Voucher } from '@/modules/voucher/schemas/voucher.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-
-export type VoucherItemDocument = HydratedDocument<VoucherItem>;
+export type CouponItemDocument = HydratedDocument<CouponItem>;
 
 @Schema({ timestamps: true })
-export class VoucherItem {
-    
+export class CouponItem {
+      
     @Prop({default: "UNUSED"})
     status: string;
     
     @Prop()
     codeId: string;
-
-    // @Prop()
-    // itemUse_id: string;
     
     @Prop()
     startedDate: Date;
@@ -24,17 +17,17 @@ export class VoucherItem {
     @Prop()
     endedDate: Date;
 
-    @Prop()
-    usedTime: Date;
-
     @Prop({default: null})
-    voucherId: string;
+    couponId: string;
 
     @Prop({default: null})
     customerId: string;
 
     @Prop({default: null})
     itemUseId: string;
+
+    @Prop()
+    usedTime: Date;
 }
 
-export const VoucherItemSchema = SchemaFactory.createForClass(VoucherItem);
+export const CouponItemSchema = SchemaFactory.createForClass(CouponItem);

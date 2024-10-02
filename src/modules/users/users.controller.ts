@@ -3,19 +3,21 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { query } from 'express';
-import { Public } from '@/decorator/customize';
+import { Public, Roles } from '@/decorator/customize';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @Roles('ADMINS', 'ADMIN')
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @Public()
+  // @Public()
+  @Roles('ADMINS', 'ADMIN')
   findAll(
     @Query() query:string,
     @Query("current") current:string,
@@ -36,13 +38,14 @@ export class UsersController {
   }
 
   @Patch("update")
-  @Public()
+  @Roles('ADMINS', 'ADMIN')
   update( @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(updateUserDto);
   }
 
 
   @Patch('/soft-delete')
+  @Roles('ADMINS', 'ADMIN')
   softDelete( 
     @Query("_id") _id:string
   ) {
@@ -50,6 +53,7 @@ export class UsersController {
   }
 
   @Delete('/remove-user')
+  @Roles('ADMINS', 'ADMIN')
   remove(@Query("_id") _id:string) {
     return this.usersService.remove(_id);
   }

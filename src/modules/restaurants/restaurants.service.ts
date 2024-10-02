@@ -39,8 +39,16 @@ export class RestaurantsService {
   }
 
   async getAllRestaurants (_id: string) {
-    const restaurants = await this.RestaurantModel.find({_id: _id}).populate('userId').exec(); 
-    return restaurants
+    const restaurants = await this.RestaurantModel.find({_id: _id}).populate('userId').populate('menuId').exec(); 
+    const formattedRestaurant = restaurants.map(restaurant => {
+      const { userId,menuId, ...rest } = restaurant.toObject(); 
+      return {
+          ...rest, 
+          user: userId,
+          memu: menuId
+      };
+    })
+    return formattedRestaurant
   }
 
   async findAll(query: string, current : number, pageSize: number) {
@@ -83,7 +91,7 @@ export class RestaurantsService {
     return await this.RestaurantModel.updateOne({_id: updateRestaurantDto._id}, {...updateRestaurantDto})
   }
 
-  async DeleteRestaurant (_id: string) {
+  async deleteRestaurant (_id: string) {
     return await this.RestaurantModel.updateOne({_id: _id}, {
       isShow: false
     })

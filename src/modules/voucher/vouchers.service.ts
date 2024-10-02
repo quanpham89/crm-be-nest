@@ -25,7 +25,7 @@ export class VouchersService {
   }
 
   async create(createVoucherDto: CreateVoucherDto) {
-    const { nameVoucher, amount, description, type, forAge, status, endedDate, startedDate } = createVoucherDto;
+    const { nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy } = createVoucherDto;
 
     const isExist = await this.isNameExist(nameVoucher);
     if (isExist) {
@@ -33,7 +33,7 @@ export class VouchersService {
     }
 
     const vouchers = await this.VoucherModal.create({
-        nameVoucher, amount, description, type, forAge, status, endedDate, startedDate
+        nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy
     });
 
     let voucherItemIdArray = [];

@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { MenusService } from './menus.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
+import { Roles } from '@/decorator/customize';
 
 @Controller('menus')
+@Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
 export class MenusController {
   constructor(private readonly menusService: MenusService) {}
 
@@ -13,22 +15,37 @@ export class MenusController {
   }
 
   @Get()
-  findAll() {
-    return this.menusService.findAll();
+  findAll(
+    @Query() query:string,
+    @Query("current") current:string,
+    @Query("pageSize") pageSize:string,
+  ) {
+    return this.menusService.findAll(query, +current, +pageSize);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.menusService.findOne(+id);
+
+  @Get('/get-menu-by-id')
+  getAllMenus(@Query("_id") _id: string) {
+    return this.menusService.getAllMenus(_id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMenuDto: UpdateMenuDto) {
-    return this.menusService.update(+id, updateMenuDto);
+
+  @Patch('/update')
+  update(@Body()  updateMenuDto: UpdateMenuDto) {
+    return this.menusService.updateMenu(updateMenuDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.menusService.remove(+id);
+  @Patch("/soft-delete")
+  softDelete(
+    @Query("_id") _id:string
+  ) {
+    return this.menusService.deleteMenu(_id);
+  }
+
+
+  @Delete('/remove-menu')
+  @Roles('ADMINS')
+  remove( @Query("_id") _id:string) {
+    return this.menusService.remove(_id);
   }
 }

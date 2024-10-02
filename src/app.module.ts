@@ -23,6 +23,9 @@ import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars
 import { TransformInterceptor } from './core/transform.interceptor';
 import { VouchersModule } from './modules/voucher/vouchers.module';
 import { VoucherItemsModule } from './modules/voucher.items/voucher.items.module';
+import { CouponsModule } from './modules/coupons/coupons.module';
+import { CouponItemsModule } from './modules/coupon.items/coupon.items.module';
+import { RolesGuard } from './auth/passport/roles.guard';
 @Module({
   imports: [
     UsersModule, 
@@ -36,6 +39,8 @@ import { VoucherItemsModule } from './modules/voucher.items/voucher.items.module
     OrdersModule,
     VouchersModule,
     VoucherItemsModule,
+    CouponsModule,
+    CouponItemsModule, 
     ConfigModule.forRoot({isGlobal: true}),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -72,7 +77,8 @@ import { VoucherItemsModule } from './modules/voucher.items/voucher.items.module
       inject: [ConfigService],
       
     }),
-    AuthModule 
+    AuthModule,
+    
   ],
   controllers: [AppController],
   providers: [
@@ -82,9 +88,14 @@ import { VoucherItemsModule } from './modules/voucher.items/voucher.items.module
       useClass: JwtAuthGuard
     },
     {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+    {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor
-    }
+    },
+   
 ],
 })
 export class AppModule {}
