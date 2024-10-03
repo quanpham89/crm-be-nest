@@ -49,7 +49,7 @@ export class MenusService {
       const { menuItemId, ...rest } = menu.toObject(); 
       return {
           ...rest, 
-          menu: menuItemId
+          menuItem: menuItemId
       };
   });
 

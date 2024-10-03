@@ -10,8 +10,12 @@ export class MenusController {
   constructor(private readonly menusService: MenusService) {}
 
   @Post()
-  create(@Body() createMenuDto: CreateMenuDto) {
-    return this.menusService.create(createMenuDto);
+  create(@Body() data: any) {
+
+    console.log("push", data)
+    const {menuItem, ...rest} = data
+    const dataMenu  = {...rest}
+    return this.menusService.create(dataMenu);
   }
 
   @Get()
