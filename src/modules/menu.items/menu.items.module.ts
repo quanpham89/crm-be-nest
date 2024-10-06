@@ -13,5 +13,6 @@ import { MenuItem, MenuItemSchema } from './schemas/menu.item.schema';
   ])],
   controllers: [MenuItemsController],
   providers: [MenuItemsService],
+  exports : [MenuItemsService]
 })
 export class MenuItemsModule {}

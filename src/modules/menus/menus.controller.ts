@@ -12,10 +12,15 @@ export class MenusController {
   @Post()
   create(@Body() data: any) {
 
-    console.log("push", data)
     const {menuItem, ...rest} = data
+    const {image, ...restMenuItem} = menuItem 
     const dataMenu  = {...rest}
-    return this.menusService.create(dataMenu);
+    const dataMenuItem = {...restMenuItem}
+    const listImage = data.menuItem.map((item: any)=>{
+      return item.image
+    })
+
+    return this.menusService.create(dataMenu, listImage, dataMenuItem);
   }
 
   @Get()

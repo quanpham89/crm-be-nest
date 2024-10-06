@@ -9,7 +9,7 @@ export class MenuItemsController {
 
   @Post()
   create(@Body() createMenuItemDto: CreateMenuItemDto) {
-    return this.menuItemsService.create(createMenuItemDto);
+    return this.menuItemsService.createItemMenu(createMenuItemDto);
   }
 
   @Get()
