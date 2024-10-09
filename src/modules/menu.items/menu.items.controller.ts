@@ -22,9 +22,9 @@ export class MenuItemsController {
     return this.menuItemsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMenuItemDto: UpdateMenuItemDto) {
-    return this.menuItemsService.update(+id, updateMenuItemDto);
+  @Post('/update-menu-item')
+  update( @Body() data: any) {
+    return this.menuItemsService.update(data);
   }
 
   @Delete(':id')
@@ -32,3 +32,4 @@ export class MenuItemsController {
     return this.menuItemsService.remove(+id);
   }
 }
+

@@ -24,7 +24,6 @@ export class MenusService {
   ) { }
 
   async covertImageToUrl(imageData: any, dataName: string) {
-    // console.log("imageData", imageData[0].thumbUrl)
     let formatImageData = imageData ? imageData[0].thumbUrl.split(",") : ""
     if (formatImageData[1]) {
       const response = await imgbbUploader({
