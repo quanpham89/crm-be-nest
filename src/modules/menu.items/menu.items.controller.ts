@@ -8,8 +8,8 @@ export class MenuItemsController {
   constructor(private readonly menuItemsService: MenuItemsService) { }
 
   @Post()
-  create(@Body() createMenuItemDto: CreateMenuItemDto) {
-    return this.menuItemsService.createItemMenu(createMenuItemDto);
+  create(@Body() data: any) {
+    return this.menuItemsService.create(data);
   }
 
   @Get()

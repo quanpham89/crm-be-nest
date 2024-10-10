@@ -26,5 +26,8 @@ export class CreateMenuItemDto {
     @IsOptional()
     deleteUrl: string;
 
+    @IsOptional()
+    status: string;
+
   
 }

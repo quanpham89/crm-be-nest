@@ -55,7 +55,8 @@ export class MenusService {
           menuId: menus._id,
           image: dataMenuItem?.image,
           deleteUrl: dataMenuItem?.deleteUrl,
-          nameMenu
+          nameMenu,
+          status: "PUBLIC"
         }
   
         const menuItem = this.MenuItemsService.createItemMenu(formatDataItemMenu)

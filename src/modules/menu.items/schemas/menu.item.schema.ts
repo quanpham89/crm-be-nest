@@ -31,6 +31,9 @@ export class MenuItem {
 
     @Prop()
     deleteUrl: string;
+    
+    @Prop({default: "PUBLIC"})
+    status: string
 
 }
 
