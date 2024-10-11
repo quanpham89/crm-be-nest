@@ -56,20 +56,21 @@ export class MenusService {
           image: dataMenuItem?.image,
           deleteUrl: dataMenuItem?.deleteUrl,
           nameMenu,
-          status: "PUBLIC"
+          status: "PUBLIC",
+          quantity : "100000"
         }
   
         const menuItem = this.MenuItemsService.createItemMenu(formatDataItemMenu)
         const updateMenuItemId = await this.MenuModel.findOne({_id:  menus._id}).select("menuItemId")
         await this.MenuModel.updateOne({_id: menus._id}, {menuItemId: [...updateMenuItemId.menuItemId, (await menuItem)._id]})
-  
+        
       }
-
+      
     }
-
     
-
+    
     const updateMenuId = await this.RestaurantModel.findOne({_id: restaurantId}).select("menuId")
+    console.log(updateMenuId)
     await this.RestaurantModel.updateOne({_id: restaurantId}, {menuId: [...updateMenuId.menuId, menus._id]})
     return {
       _id: menus._id,

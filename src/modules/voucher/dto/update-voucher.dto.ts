@@ -21,4 +21,8 @@ export class UpdateVoucherDto  {
 
     @IsOptional()
     userCreateId: string;
+
+    @IsOptional()
+    percentage: number
+
 }

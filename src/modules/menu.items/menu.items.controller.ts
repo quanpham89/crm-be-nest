@@ -27,9 +27,19 @@ export class MenuItemsController {
     return this.menuItemsService.update(data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.menuItemsService.remove(+id);
+  @Patch('/active-item')
+  activeMenuItem(@Body() data: any) {
+    return this.menuItemsService.activeMenuItem(data.data);
+  }
+
+  @Patch('/soft-delete')
+  softDelete(@Body() data: any) {
+    return this.menuItemsService.softDelete(data.data);
+  }
+
+  @Delete("delete-item-menu")
+  remove(@Body() data: any) {
+    return this.menuItemsService.remove(data.data);
   }
 }
 

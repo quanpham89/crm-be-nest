@@ -17,6 +17,9 @@ export class CreateVoucherDto {
     @IsNotEmpty({message: "for không được để trống "})
     forAge: string;
 
+    @IsNotEmpty({message: "percentage không được để trống "})
+    percentage: number
+
     @IsOptional()
     status: string;
 

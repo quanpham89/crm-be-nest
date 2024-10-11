@@ -26,6 +26,9 @@ export class Voucher {
     @Prop()
     startedDate: Date;
 
+    @Prop()
+    percentage: number;
+
     @Prop({default: "child"})
     forAge: string;
 

@@ -29,5 +29,7 @@ export class CreateMenuItemDto {
     @IsOptional()
     status: string;
 
+    @IsOptional()
+    quantity: string
   
 }

@@ -3,7 +3,7 @@ import { CreateMenuItemDto } from './create-menu.item.dto';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import mongoose from 'mongoose';
 
-export class UpdateMenuItemDto{s
+export class UpdateMenuItemDto{
 
     @IsNotEmpty({message: "action coupon không được để trống "})
     action: string;
@@ -25,4 +25,7 @@ export class UpdateMenuItemDto{s
 
     @IsOptional()
     deleteUrl: string;
+
+    @IsOptional()
+    quantity: string
 }

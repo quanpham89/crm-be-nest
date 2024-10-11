@@ -104,7 +104,38 @@ export class MenuItemsService {
 
   }
 
-  remove() {
-    return `This action removes a #${id} menuItem`;
+  async activeMenuItem (data: any) {
+    if(data && data.length>0){
+      return await this.MenuItemModel.updateMany(
+        { _id: { $in:  data} },
+        { $set: { status: "PUBLIC" } }
+      )
+    }
+    return "Something wrong"
+  }
+
+  async softDelete (data: any) {
+    if(data && data.length>0){
+      return await this.MenuItemModel.updateMany(
+        { _id: { $in:  data} },
+        { $set: { status: "HIDDEN" } }
+      )
+    }
+    return "Something wrong"
+  }
+
+  
+
+  async remove(data:any) {
+    if(data && data.length>0){
+      const res = await this.MenuItemModel.deleteMany(
+        { _id: { $in:  data} },
+        { $set: { status: "HIDDEN" } }
+      )
+      return {
+        EC: 0
+      }
+    }
+    return "Something wrong"
   }
 }

@@ -33,7 +33,7 @@ export class Restaurant {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null })
     userId: string;
     
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Menu', default: null })
+    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Menu', default: [] })
     menuId: string[];
 }
 

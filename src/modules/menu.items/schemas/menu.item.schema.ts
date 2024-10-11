@@ -35,6 +35,9 @@ export class MenuItem {
     @Prop({default: "PUBLIC"})
     status: string
 
+    @Prop({default: 10})
+    quantity: string;
+
 }
 
 export const MenuItemSchema = SchemaFactory.createForClass(MenuItem);
