@@ -45,6 +45,14 @@ export class RestaurantsController {
     return this.restaurantsService.deleteRestaurant(_id);
   }
 
+  @Patch("active-restaurant")
+  @Roles('ADMINS', 'ADMIN')
+  activeRestaurant(
+    @Query("_id") _id:string
+  ) {
+    return this.restaurantsService.activeRestaurant(_id);
+  }
+
   @Delete('/remove-restaurant')
   @Roles('ADMINS')
   remove( @Query("_id") _id:string) {

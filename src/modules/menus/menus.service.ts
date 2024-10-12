@@ -77,7 +77,7 @@ export class MenusService {
     };
   }
 
-  async findAll(query: string, current: number, pageSize: number) {
+  async findAll(query: string, current: number, pageSize: number, belongTo) {
     const { filter, sort } = aqp(query);
     if (filter.current) delete filter.current;
     if (filter.pageSize) delete filter.pageSize;
@@ -88,7 +88,7 @@ export class MenusService {
     const skip = (current - 1) * (pageSize)
 
     const results = await this.MenuModel
-      .find(filter)
+      .find({restaurantId: filter.belongTo})
       .sort({ createdAt: -1 })
       .limit(pageSize)
       .skip(skip)
@@ -134,16 +134,27 @@ export class MenusService {
   }
 
   async deleteMenu(_id: string) {
-    return await this.MenuModel.updateOne({ _id: _id }, {
-      status: "HIDDEN"
-    })
-
+    if (mongoose.isValidObjectId(_id)) {
+      return await this.MenuModel.updateOne({ _id: _id }, {
+        status: "HIDDEN"
+      })
+    } else {
+      throw new BadRequestException("Id không hợp lệ")
+    }
   }
 
+   async activeMenu(_id: string){
+    if (mongoose.isValidObjectId(_id)) {
+      return await this.MenuModel.updateOne({ _id: _id }, {
+        status: "PUBLIC"
+      })
+    } else {
+      throw new BadRequestException("Id không hợp lệ")
+    }
+   }
+
   remove(_id: string) {
-    if (
-      mongoose.isValidObjectId(_id)) {
-      // delete
+    if (mongoose.isValidObjectId(_id)) {
       return this.MenuModel.deleteOne({ _id })
     } else {
       throw new BadRequestException("Id không hợp lệ")

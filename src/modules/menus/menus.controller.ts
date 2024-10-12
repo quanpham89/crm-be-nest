@@ -28,8 +28,10 @@ export class MenusController {
     @Query() query:string,
     @Query("current") current:string,
     @Query("pageSize") pageSize:string,
+    @Query("belongTo") belongTo:string,
+
   ) {
-    return this.menusService.findAll(query, +current, +pageSize);
+    return this.menusService.findAll(query, +current, +pageSize, belongTo);
   }
 
 
@@ -51,10 +53,18 @@ export class MenusController {
     return this.menusService.deleteMenu(_id);
   }
 
+  @Patch("/active-menu")
+  activeMenu(
+    @Query("_id") _id:string
+  ) {
+    return this.menusService.activeMenu(_id);
+  }
+
 
   @Delete('/remove-menu')
   @Roles('ADMINS')
   remove( @Query("_id") _id:string) {
+    console.log(_id)
     return this.menusService.remove(_id);
   }
 }

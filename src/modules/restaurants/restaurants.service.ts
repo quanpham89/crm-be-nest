@@ -92,17 +92,31 @@ export class RestaurantsService {
   }
 
   async deleteRestaurant (_id: string) {
-    return await this.RestaurantModel.updateOne({_id: _id}, {
-      isShow: false
-    })
+    if(mongoose.isValidObjectId(_id)){
+      return await this.RestaurantModel.updateOne({_id: _id}, {
+        isShow: false
+      })
+    }else{
+      throw new BadRequestException("Id không hợp lệ")
+    }
+  }    
 
+
+  async activeRestaurant  (_id: string) {
+    if(mongoose.isValidObjectId(_id)){
+      return await this.RestaurantModel.updateOne({_id: _id}, {
+        isShow: true
+      })
+    }else{
+      throw new BadRequestException("Id không hợp lệ")
+    }
+    
   }
 
   
 
   remove(_id: string) {
-    if(
-      mongoose.isValidObjectId(_id)){
+    if(mongoose.isValidObjectId(_id)){
       // delete
       return this.RestaurantModel.deleteOne({_id})
     }else{
