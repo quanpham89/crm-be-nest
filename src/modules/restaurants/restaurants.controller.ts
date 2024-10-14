@@ -5,6 +5,7 @@ import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { Public, Roles } from '@/decorator/customize';
 
 @Controller('restaurants')
+@Roles('ADMINS', 'ADMIN')
 
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
@@ -16,7 +17,6 @@ export class RestaurantsController {
   }
 
   @Get()
-  @Roles('ADMINS', 'ADMIN')
   findAll(
     @Query() query:string,
     @Query("current") current:string,
@@ -26,19 +26,17 @@ export class RestaurantsController {
   }
 
   @Get('/get-retaurant-by-id')
-  @Roles('ADMINS', 'ADMIN')
+  @Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
   findOne(@Query("_id") _id: string) {
     return this.restaurantsService.getAllRestaurants(_id);
   }
 
   @Patch('/update')
-  @Roles('ADMINS', 'ADMIN')
   update(@Body() updateRestaurantDto: UpdateRestaurantDto) {
     return this.restaurantsService.updateRestaurant(updateRestaurantDto);
   }
 
   @Patch("/soft-delete")
-  @Roles('ADMINS', 'ADMIN')
   softDelete(
     @Query("_id") _id:string
   ) {
@@ -46,7 +44,6 @@ export class RestaurantsController {
   }
 
   @Patch("active-restaurant")
-  @Roles('ADMINS', 'ADMIN')
   activeRestaurant(
     @Query("_id") _id:string
   ) {

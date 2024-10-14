@@ -5,6 +5,7 @@ import { UsersService } from '@/modules/users/users.service';
 import { comparePaswwordHelper } from '@/helpers/ulti';
 import { JwtService } from '@nestjs/jwt';
 import { changePasswordDto, CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
+import { Restaurant } from '@/modules/restaurants/schemas/restaurant.schema';
 @Injectable()
 export class AuthService {
 
@@ -22,7 +23,7 @@ export class AuthService {
   }
 
   async login (user: any) {
-     const payload = {sub: user._id, username: user.email,  role: user.role, accountType: user.accountType}
+     const payload = {sub: user._id, username: user.email,  role: user.role, accountType: user.accountType, restaurantId: user.restaurantId}
 
     return {
       user:{
@@ -30,9 +31,8 @@ export class AuthService {
         _id: user._id,
         name: user.name,
         role: user.role,
-        accountType: user.accountType
-
-
+        accountType: user.accountType,
+        restaurantId: user.restaurantId
       },
       access_token: await this.jwtService.signAsync(payload)
     }

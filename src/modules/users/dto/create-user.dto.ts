@@ -35,5 +35,8 @@ export class CreateUserDto {
     @IsOptional()
     isActive: boolean
 
+    @IsOptional()
+    restaurantId: string
+
 
 }

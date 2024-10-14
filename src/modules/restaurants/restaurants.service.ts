@@ -6,12 +6,15 @@ import { MailerService } from '@nestjs-modules/mailer';
 import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
+import { User } from '../users/schemas/user.schema';
 
 
 @Injectable()
 export class RestaurantsService {
   constructor(
     @InjectModel(Restaurant.name) private RestaurantModel: Model<Restaurant>,
+    @InjectModel(User.name) private UserModel: Model<User>,
+
     private readonly mailerService : MailerService
   ){}
 
@@ -33,19 +36,26 @@ export class RestaurantsService {
       phone, restaurantName, address, image, isShow, rating, description, menuId, userId, productType
     })
 
+    // update restaurantId for User
+    await this.UserModel.updateOne({_id: userId}, {restaurantId: Restaurant._id})
+
     return {
       _id: Restaurant._id
     };
   }
 
   async getAllRestaurants (_id: string) {
-    const restaurants = await this.RestaurantModel.find({_id: _id}).populate('userId').populate('menuId').exec(); 
+    const restaurants = await this.RestaurantModel.find({_id: _id})
+    .populate({
+      path: 'userId',
+      select: "-password"
+    }).populate('menuId').exec(); 
     const formattedRestaurant = restaurants.map(restaurant => {
       const { userId,menuId, ...rest } = restaurant.toObject(); 
       return {
           ...rest, 
           user: userId,
-          memu: menuId
+          menu: menuId
       };
     })
     return formattedRestaurant

@@ -6,18 +6,16 @@ import { query } from 'express';
 import { Public, Roles } from '@/decorator/customize';
 
 @Controller('users')
+@Roles('ADMINS', 'ADMIN')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Roles('ADMINS', 'ADMIN')
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  // @Public()
-  @Roles('ADMINS', 'ADMIN')
   findAll(
     @Query() query:string,
     @Query("current") current:string,
@@ -26,26 +24,24 @@ export class UsersController {
     return this.usersService.findAll(query, +current, +pageSize);
   }
 
-  @Get("get-all-users")
+  @Get("/get-all-users")
   @Public()
   findAllIdUser() {
     return this.usersService.findAllIdUser();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get("/get-user-by-id")
+  findOne(@Query("_id") _id: string) {
+    return this.usersService.findOne(_id);
   }
 
   @Patch("update")
-  @Roles('ADMINS', 'ADMIN')
   update( @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(updateUserDto);
   }
 
 
   @Patch('/soft-delete')
-  @Roles('ADMINS', 'ADMIN')
   softDelete( 
     @Query("_id") _id:string
   ) {
@@ -53,8 +49,8 @@ export class UsersController {
   }
 
   @Delete('/remove-user')
-  @Roles('ADMINS', 'ADMIN')
   remove(@Query("_id") _id:string) {
     return this.usersService.remove(_id);
   }
+
 }

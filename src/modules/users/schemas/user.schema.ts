@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -43,6 +43,9 @@ export class User {
     
     @Prop()
     birthday: Date;
+
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', default: null })
+    restaurantId: string;
 
 }
 

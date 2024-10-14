@@ -25,7 +25,7 @@ export class UsersService {
 
 
   async create(createUserDto: CreateUserDto) {
-    const {name, email, password, phone, address, image, accountType, role, sex, birthday, isActive } = createUserDto
+    const {name, email, password, phone, address, image, accountType, role, sex, birthday, isActive, restaurantId } = createUserDto
     // check exist
     const isExist = await this.isEmailExist(email)
     if(isExist){
@@ -35,7 +35,7 @@ export class UsersService {
     // hashPassword
     const hashPassword = await hashPaswwordHelper(password)
     const user = await this.userModel.create({
-      name, email, password: hashPassword, phone, address, image, accountType, role, sex, birthday
+      name, email, password: hashPassword, phone, address, image, accountType, role, sex, birthday, restaurantId, isActive
     })
     return {
       _id: user._id
@@ -68,9 +68,30 @@ export class UsersService {
 
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(_id: string) {
+    if(!_id){
+      throw new BadRequestException("Người dùng chưa đăng kí tài khoản.")
+    }else{
+        const _menuIds = await this.userModel.findOne({_id: _id}).select("menuId")
+        const response = await this.userModel.findOne({_id: _id})
+        .populate({
+        path: 'restaurantId',
+        select: '-updatedAt -createdAt -__v',
+        populate: {
+          path: 'menuId',
+          match: { _id: { $in: _menuIds }},
+          select: '-updatedAt -createdAt -__v'
+        }
+      }
+      
+    )
+      .select('-updatedAt -createdAt -__v')
+      .exec();
+
+      return response
+    }
   }
+
   async findByEmail (email : string) {
     return await this.userModel.findOne({email})
   }
