@@ -22,6 +22,5 @@ export class UpdateMenuDto  {
     @IsOptional()
     createdBy: string;
 
-    @IsNotEmpty({message: "useCreateId không được để trống "})
-    userCreateId: string
+   
 }

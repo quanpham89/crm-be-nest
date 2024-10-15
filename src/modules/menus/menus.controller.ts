@@ -11,7 +11,6 @@ export class MenusController {
 
   @Post()
   create(@Body() data: any) {
-
     const {menuItem, ...rest} = data
     const {image, ...restMenuItem} = menuItem 
     const dataMenu  = {...rest}
@@ -19,8 +18,7 @@ export class MenusController {
     const listImage = data.menuItem.map((item: any)=>{
       return item.image
     })
-
-    return this.menusService.create(dataMenu, listImage, dataMenuItem);
+    return this.menusService.create(dataMenu, listImage, dataMenuItem, menuItem.length);
   }
 
   @Get()
@@ -33,7 +31,6 @@ export class MenusController {
   ) {
     return this.menusService.findAll(query, +current, +pageSize, belongTo);
   }
-
 
   @Get('/get-menu-by-id')
   getAllMenus(@Query("_id") _id: string) {
@@ -64,7 +61,6 @@ export class MenusController {
   @Delete('/remove-menu')
   @Roles('ADMINS')
   remove( @Query("_id") _id:string) {
-    console.log(_id)
     return this.menusService.remove(_id);
   }
 }

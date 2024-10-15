@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { MenuItemsService } from './menu.items.service';
 import { CreateMenuItemDto } from './dto/create-menu.item.dto';
 import { UpdateMenuItemDto } from './dto/update-menu.item.dto';
+import { Roles } from '@/decorator/customize';
 
 @Controller('menu-items')
+@Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
 export class MenuItemsController {
   constructor(private readonly menuItemsService: MenuItemsService) { }
 

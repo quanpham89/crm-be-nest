@@ -9,7 +9,7 @@ export type MenuDocument = HydratedDocument<Menu>;
 
 @Schema({ timestamps: true })
 export class Menu {
-    @Prop()
+    @Prop({ type:mongoose.Schema.Types.ObjectId, ref: Restaurant.name })
     restaurantId:string;
 
     @Prop()

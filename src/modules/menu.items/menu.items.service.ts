@@ -32,13 +32,12 @@ export class MenuItemsService {
   }
 
   async createItemMenu(createMenuItemDto: CreateMenuItemDto) {
-    const {nameItemMenu, description , image , sellingPrice, fixedPrice, menuId, deleteUrl, nameMenu, status } = createMenuItemDto
+    const {nameItemMenu, description , image , sellingPrice, fixedPrice, menuId, deleteUrl, nameMenu, status, quantity } = createMenuItemDto
     const menuItems  = await this.MenuItemModel.create({
-      nameItemMenu, description , sellingPrice, fixedPrice, menuId, deleteUrl, nameMenu, image, status
+      nameItemMenu, description , sellingPrice, fixedPrice, menuId, deleteUrl, nameMenu, image, status, quantity
     })
     return {
       _id: menuItems._id,
-
     }
 
   }

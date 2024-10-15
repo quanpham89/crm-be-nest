@@ -24,53 +24,48 @@ export class MenusService {
   ) { }
 
   async covertImageToUrl(imageData: any, dataName: string) {
-    let formatImageData = imageData ? imageData[0].thumbUrl.split(",") : ""
-    if (formatImageData[1]) {
-      const response = await imgbbUploader({
-        apiKey: this.configService.get<string>('API_UPLOAD_IMAGE_KEY'),
-        base64string: formatImageData[1],
-        name: dataName ? dataName : ""
-      });
-      return response
-    }
+      let formatImageData = imageData && imageData[0] ? imageData[0].thumbUrl.split(",") : ""
+      if (formatImageData[1]) {
+        const response = await imgbbUploader({
+          apiKey: this.configService.get<string>('API_UPLOAD_IMAGE_KEY'),
+          base64string: formatImageData[1],
+          name: dataName ? dataName : ""
+        });
+        return response
+      }
   }
 
-  async create(createMenuDto: CreateMenuDto, listImage: any, dataMenuItem: any) {
+  async create(createMenuDto: CreateMenuDto, listImage: any, dataMenuItem: any, numberItem: number) {
     const { nameMenu, description, image, status, createdBy, userCreateId, restaurantId } = createMenuDto;
     const menus = await this.MenuModel.create({
       nameMenu, description, image, status, createdBy, userCreateId, restaurantId
     });
 
-
-    for(let i = 0;i<listImage.length;i++){
-      const response = await this.covertImageToUrl(listImage[i], nameMenu)
+    for(let i = 0;i<numberItem;i++){
+      const response = await this.covertImageToUrl(listImage[i],  dataMenuItem[i].nameItemMenu)
       if(response){
-        dataMenuItem.image = response.display_url
-        dataMenuItem.deleteUrl = response.delete_url
-        const formatDataItemMenu = {
-          nameItemMenu: dataMenuItem[i].nameItemMenu,
-          description: dataMenuItem[i].description,
-          sellingPrice: dataMenuItem[i].sellingPrice,
-          fixedPrice: dataMenuItem[i].fixedPrice,
-          menuId: menus._id,
-          image: dataMenuItem?.image,
-          deleteUrl: dataMenuItem?.deleteUrl,
-          nameMenu,
-          status: "PUBLIC",
-          quantity : "100000"
-        }
-  
-        const menuItem = this.MenuItemsService.createItemMenu(formatDataItemMenu)
-        const updateMenuItemId = await this.MenuModel.findOne({_id:  menus._id}).select("menuItemId")
-        await this.MenuModel.updateOne({_id: menus._id}, {menuItemId: [...updateMenuItemId.menuItemId, (await menuItem)._id]})
-        
+        dataMenuItem[i].image = response?.display_url
+        dataMenuItem[i].deleteUrl = response?.delete_url
       }
+      const formatDataItemMenu = {
+        nameItemMenu: dataMenuItem[i].nameItemMenu,
+        description: dataMenuItem[i].description,
+        sellingPrice: dataMenuItem[i].sellingPrice,
+        fixedPrice: dataMenuItem[i].fixedPrice,
+        menuId: menus._id,
+        image: dataMenuItem[i]?.image,
+        deleteUrl: dataMenuItem[i]?.deleteUrl,
+        nameMenu,
+        status: "PUBLIC",
+        quantity : "100000"
+      }
+
+      const menuItem = this.MenuItemsService.createItemMenu(formatDataItemMenu)
+      const updateMenuItemId = await this.MenuModel.findOne({_id:  menus._id}).select("menuItemId")
+      await this.MenuModel.updateOne({_id: menus._id}, {menuItemId: [...updateMenuItemId.menuItemId, (await menuItem)._id]})
       
     }
-    
-    
     const updateMenuId = await this.RestaurantModel.findOne({_id: restaurantId}).select("menuId")
-    console.log(updateMenuId)
     await this.RestaurantModel.updateOne({_id: restaurantId}, {menuId: [...updateMenuId.menuId, menus._id]})
     return {
       _id: menus._id,
@@ -110,17 +105,24 @@ export class MenusService {
   }
 
   async getAllMenus(_id: string) {
-    const menus = await this.MenuModel.find({ _id: _id }).populate({
+    const menus = await this.MenuModel.find({ _id: _id })
+    .populate({
       path: 'menuItemId',
       select : "-updatedAt -createdAt -__v"
 
-    }).select("-updatedAt -createdAt -__v").exec();
+    })
+    .populate({
+      path: 'restaurantId',
+      select : "-updatedAt -createdAt -__v -menuId"
+    })
+    .select("-updatedAt -createdAt -__v").exec();
 
     const formattedResults = menus.map(menu => {
-      const { menuItemId, ...rest } = menu.toObject();
+      const { menuItemId,restaurantId, ...rest } = menu.toObject();
       return {
         ...rest,
-        menuItem: menuItemId
+        restaurant: restaurantId,
+        menuItem: menuItemId,
       };
     });
 
