@@ -15,9 +15,26 @@ export class OrdersService {
 
    ){}
   async create(createOrderDto: CreateOrderDto) {
-    const {userId, totalPrice, orderTime, menuItemId, menuId, restaurantId, paymentForm } = createOrderDto
+    const {
+      restaurantId,
+      userId,
+      menuId,
+      menuItemId,
+      totalPrice,
+      orderTime,
+      deliveryTime,
+      address,
+      paymentForm } = createOrderDto
     const order = await this.OrderModel.create({
-      userId, totalPrice, orderTime, menuItemId, menuId, restaurantId, paymentForm
+      restaurantId,
+      userId,
+      menuId,
+      menuItemId,
+      totalPrice,
+      orderTime,
+      deliveryTime,
+      address,
+      paymentForm
     })
     return {
       _id: order._id
@@ -34,11 +51,14 @@ export class OrdersService {
         match: { _id: "67023d240f9780da45d7a43c" },
         select: '-updatedAt -createdAt -__v',
         populate: {
+          
           path: 'menuItemId',
           match: { _id: "67074737e8c68120e4cfb24b" },
           select: '-updatedAt -createdAt -__v'
         }
       }
+
+
     })
     .populate({
       path: 'userId',

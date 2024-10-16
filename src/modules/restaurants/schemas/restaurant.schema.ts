@@ -27,7 +27,7 @@ export class Restaurant {
     @Prop({default: true})
     isShow: boolean
     
-    @Prop({default: null})
+    @Prop({default:"https://t3.ftcdn.net/jpg/04/84/88/76/360_F_484887682_Mx57wpHG4lKrPAG0y7Q8Q7bJ952J3TTO.jpg"})
     image: string
     
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null })

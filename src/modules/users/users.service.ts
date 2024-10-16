@@ -1,3 +1,4 @@
+import { Customer } from './../customer/schemas/customers.schema';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -15,6 +16,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Customer.name) private customerModel: Model<Customer>,
+
     private readonly mailerService : MailerService
   ){}
 
@@ -37,6 +40,14 @@ export class UsersService {
     const user = await this.userModel.create({
       name, email, password: hashPassword, phone, address, image, accountType, role, sex, birthday, restaurantId, isActive
     })
+
+
+    // customer
+    if(role === "CUSTOMER"){
+      await this.customerModel.create({
+        userId: user._id,
+      })
+    }
     return {
       _id: user._id
     };
@@ -133,6 +144,10 @@ export class UsersService {
       isActive , codeId,
       role, phone, sex, accountType,
       codeExpired: dayjs().add(5, "minutes")
+    })
+
+    await this.customerModel.create({
+      userId: user._id,
     })
 
     //  response request

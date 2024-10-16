@@ -1,13 +1,13 @@
-// import { MenuItemOption } from '@/modules/menu.item.options/schemas/menu.item.option.schema';
-// import { MenuItem } from '@/modules/menu.items/schemas/menu.item.schema';
-// import { Menu } from '@/modules/menus/schemas/menu.schema';
-// import { Order } from '@/modules/orders/schemas/order.schema';
-import { MenuItemOption } from 'src/modules/menu.item.options/schemas/menu.item.option.schema';
+
 import { MenuItem } from 'src/modules/menu.items/schemas/menu.item.schema';
 import { Menu } from 'src/modules/menus/schemas/menu.schema';
 import { Order } from 'src/modules/orders/schemas/order.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { User } from '@/modules/users/schemas/user.schema';
+import { Voucher } from '@/modules/voucher/schemas/voucher.schema';
+import { Coupon } from '@/modules/coupons/schemas/coupon.schema';
+import { Review } from '@/modules/reviews/schemas/review.schema';
 
 export type OrderDetailDocument = HydratedDocument<OrderDetail>;
 
@@ -22,8 +22,17 @@ export class OrderDetail {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: MenuItem.name })
     menuItem: mongoose.Schema.Types.ObjectId;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: MenuItemOption.name })
-    menuItemOption: mongoose.Schema.Types.ObjectId;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+    user: mongoose.Schema.Types.ObjectId;
+
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Voucher.name })
+    voucher: mongoose.Schema.Types.ObjectId;
+
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Coupon.name })
+    coupon: mongoose.Schema.Types.ObjectId;
+
+    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Review.name })
+    review: mongoose.Schema.Types.ObjectId;
 }
 
 export const OrderDetailSchema = SchemaFactory.createForClass(OrderDetail);

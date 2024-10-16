@@ -18,8 +18,6 @@ import {
         
         const request = context.switchToHttp().getRequest();
         const user = request.user; 
-        // console.log("userRole", user)
-        // console.log("requiredRoles", requiredRoles)
   
       if (!user || !requiredRoles.includes(user.roles)) {
         throw new ForbiddenException("You don't have permission to access this data.");

@@ -4,7 +4,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { Menu } from './schemas/menu.schema';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, Mongoose } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
 const imgbbUploader = require("imgbb-uploader");
@@ -72,7 +72,7 @@ export class MenusService {
     };
   }
 
-  async findAll(query: string, current: number, pageSize: number, belongTo) {
+  async findAll(query: string, current: number, pageSize: number, belongTo: any) {
     const { filter, sort } = aqp(query);
     if (filter.current) delete filter.current;
     if (filter.pageSize) delete filter.pageSize;
@@ -81,7 +81,6 @@ export class MenusService {
     const totalItems = (await this.MenuModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / pageSize);
     const skip = (current - 1) * (pageSize)
-
     const results = await this.MenuModel
       .find({restaurantId: filter.belongTo})
       .sort({ createdAt: -1 })

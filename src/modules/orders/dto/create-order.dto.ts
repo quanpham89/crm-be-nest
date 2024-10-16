@@ -24,6 +24,9 @@ export class CreateOrderDto {
     @IsNotEmpty({message: "address không được để trống "})
     address: string;
 
+    @IsOptional()
+    deliveryTime: string
+
 }
 
 
