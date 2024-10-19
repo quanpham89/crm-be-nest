@@ -25,10 +25,16 @@ export class RestaurantsController {
     return this.restaurantsService.findAll(query, +current, +pageSize);
   }
 
+  @Get("/get-all-restaurant")
+  @Public()
+  getAllRestaurant() {
+    return this.restaurantsService.getAllRestaurant();
+  }
+
   @Get('/get-retaurant-by-id')
   @Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
   findOne(@Query("_id") _id: string) {
-    return this.restaurantsService.getAllRestaurants(_id);
+    return this.restaurantsService.getRestaurantsById(_id);
   }
 
   @Patch('/update')

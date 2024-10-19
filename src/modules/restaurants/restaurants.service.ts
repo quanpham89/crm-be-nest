@@ -44,8 +44,13 @@ export class RestaurantsService {
     };
   }
 
-  async getAllRestaurants (_id: string) {
-    const restaurants = await this.RestaurantModel.find({_id: _id})
+   async getAllRestaurant () {
+    return await this.RestaurantModel.find().select(" -createdAt -updatedAt -__v")
+   
+  }
+
+  async getRestaurantsById (_id: string) {
+    const restaurants = await this.RestaurantModel.find({userId: _id})
     .populate({
       path: 'userId',
       select: "-password"
