@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CreateVoucherItemDto } from './dto/create-voucher.item.dto';
 import { UpdateVoucherItemDto } from './dto/update-voucher.item.dto';
 import { VoucherItemsService } from './voucher.items.service';
+import { Public } from '@/decorator/customize';
 @Controller('voucher-items')
+
 export class VoucherItemsController {
   constructor(private readonly voucherItemsService: VoucherItemsService) { }
 
@@ -14,6 +16,12 @@ export class VoucherItemsController {
   @Get()
   findAll() {
     return this.voucherItemsService.findAll();
+  }
+
+  @Get("/get-all-voucher-items")
+  @Public()
+  getAllRestaurant() {
+    return this.voucherItemsService.getAllVoucherItems();
   }
 
   @Get(':id')

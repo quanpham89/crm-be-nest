@@ -25,6 +25,9 @@ export class Coupon {
     @Prop()
     startedDate: Date;
 
+    @Prop( {default: "https://m.media-amazon.com/images/I/41EZgyu05hL._AC_UF1000,1000_QL80_.jpg"})
+    image: string;
+
     @Prop({default: "ALL"})
     scope: string;
 
@@ -39,6 +42,9 @@ export class Coupon {
 
     @Prop({default : null})
     userCreateId: string;
+
+    @Prop({default: undefined})
+    userGetCouponId: string[]
 
 }
 

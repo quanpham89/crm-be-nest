@@ -26,6 +26,9 @@ export class Voucher {
     @Prop()
     startedDate: Date;
 
+    @Prop({default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMd52cHZLpJLth8HUZhqpnHiKXXNYQ5nFd-Q&s"})
+    image: string;
+
     @Prop()
     percentage: number;
 
@@ -35,6 +38,9 @@ export class Voucher {
     @Prop({default: "HIDDEN"})
     status: string;
 
+    @Prop({default: "ALL"})
+    scope: string;
+
     @Prop({default: "ADMIN"})
     createdBy: string
 
@@ -43,6 +49,9 @@ export class Voucher {
 
     @Prop({default: undefined})
     userCreateId: string;
+
+    @Prop({default: undefined})
+    userGetVoucherId: string[];
 
 }
 

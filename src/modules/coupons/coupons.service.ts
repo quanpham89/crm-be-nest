@@ -23,7 +23,7 @@ export class CouponsService {
 
   async create(createCouponDto: CreateCouponDto) {
 
-     const { nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount } = createCouponDto;
+     const { nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image } = createCouponDto;
 
     const isExist = await this.isNameExist(nameCoupon);
     if (isExist) {
@@ -31,7 +31,7 @@ export class CouponsService {
     }
 
     const coupons = await this.CouponModal.create({
-      nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount
+      nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image
     });
 
     let couponItemIdArray = [];
@@ -42,7 +42,8 @@ export class CouponsService {
             status: "UNUSED",
             couponId: coupons._id,
             codeId,
-            endedDate, startedDate
+            endedDate, startedDate,
+            image: "https://m.media-amazon.com/images/I/41EZgyu05hL._AC_UF1000,1000_QL80_.jpg"
         });
         couponItemIdArray.push(couponItem._id);
     }
@@ -62,12 +63,12 @@ export class CouponsService {
     if(filter.pageSize ) delete filter.pageSize;
     if(!current) current = 1;
     if(!pageSize) pageSize = 10;
-    const totalItems = (await this.CouponModal.find(filter)).length;
+    const totalItems = (await this.CouponModal.find(filter.belongTo !== "undefined" ? {userCreateId: filter.belongTo} : {})).length;
     const totalPages = Math.ceil(totalItems / pageSize);
     const skip = (current - 1) * (pageSize)
 
     const results : any= await this.CouponModal
-    .find( filter)
+    .find(  filter.belongTo !== "undefined" ? {userCreateId: filter.belongTo} : {})
     .sort({ createdAt: -1 })
     .limit(pageSize)
     .skip(skip)
@@ -111,7 +112,7 @@ export class CouponsService {
   }
 
   async searchCoupon (searchCoupon : SearchCouponDto) {
-    const {nameCoupon, _id, scope, discount, endedTime, startedTime} = searchCoupon
+    const {nameCoupon, _id, scope, discount, endedTime, startedTime, userCreateId} = searchCoupon
     if(!nameCoupon  && !_id  && !scope && !discount  && !endedTime && !startedTime ){
       throw new BadRequestException(`Bạn cần có ít nhất 1 giá trị để thực hiện tìm kiếm`);
     }
@@ -120,6 +121,8 @@ export class CouponsService {
     if (_id) query._id = _id;
     if (scope) query.scope = scope;
     if (discount) query.discount = discount;
+    if (userCreateId) query.userCreateId = userCreateId
+
     if(startedTime) {
       query.createdAt =  {
         $gte: new Date(startedTime),

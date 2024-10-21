@@ -26,6 +26,9 @@ export class CreateVoucherDto {
     @IsOptional()
     createdBy: string;
 
+    @IsOptional()
+    image: string;
+
     @IsNotEmpty({message: "Ngày bắt đầu có hiệu lực không được để trống"})
     endedDate: Date;
 
@@ -34,6 +37,7 @@ export class CreateVoucherDto {
 
     @IsNotEmpty({message: "id người tạo không được để trống"})
     userCreateId: Date;
+
 }
 
 export class SearchVoucerDto{
@@ -54,5 +58,8 @@ export class SearchVoucerDto{
 
     @IsOptional()
     endedTime: Date;
+
+    @IsOptional()
+    userCreateId: string;
 
 }

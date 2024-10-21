@@ -18,5 +18,8 @@ export class CreateVoucherItemDto {
 
     @IsOptional()    
     endedDate : Date
+
+    @IsOptional()    
+    image : string
     
 }

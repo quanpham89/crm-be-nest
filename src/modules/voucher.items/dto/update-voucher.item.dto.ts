@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateVoucherItemDto } from './create-voucher.item.dto';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class UpdateVoucherItemDto extends PartialType(CreateVoucherItemDto) {
+export class UpdateVoucherItemDto {
     @IsNotEmpty({message: "Name không đươc để trống"})
     nameVoucherItem: string;
     
@@ -20,4 +20,7 @@ export class UpdateVoucherItemDto extends PartialType(CreateVoucherItemDto) {
 
     @IsOptional()    
     endedDate : Date
+
+    @IsOptional()
+    image: string;
 }

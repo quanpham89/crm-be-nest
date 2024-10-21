@@ -15,8 +15,8 @@ export class VoucherItem {
     @Prop()
     codeId: string;
 
-    // @Prop()
-    // itemUse_id: string;
+    @Prop({default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMd52cHZLpJLth8HUZhqpnHiKXXNYQ5nFd-Q&s"})
+    image: string;
     
     @Prop()
     startedDate: Date;

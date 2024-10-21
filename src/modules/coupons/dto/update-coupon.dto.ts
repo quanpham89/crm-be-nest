@@ -23,4 +23,8 @@ export class UpdateCouponDto extends PartialType(CreateCouponDto) {
 
     @IsOptional()
     userCreateId: string;
+
+    @IsOptional()
+    image: string;
+
 }

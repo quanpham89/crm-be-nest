@@ -25,7 +25,7 @@ export class VouchersService {
   }
 
   async create(createVoucherDto: CreateVoucherDto) {
-    const { nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage} = createVoucherDto;
+    const { nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage, image} = createVoucherDto;
 
     const isExist = await this.isNameExist(nameVoucher);
     if (isExist) {
@@ -33,18 +33,19 @@ export class VouchersService {
     }
 
     const vouchers = await this.VoucherModal.create({
-        nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage
+        nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage, image
     });
 
     let voucherItemIdArray = [];
-
+    console.log(image)
     for (let i = 0; i < +amount; i++) {
         const codeId = uuidv4();
         const voucherItem = await this.VoucherItemsModal.create({
             status: "UNUSED",
             voucherId: vouchers._id,
             codeId,
-            endedDate, startedDate
+            endedDate, startedDate,
+            image
         });
         voucherItemIdArray.push(voucherItem._id);
     }
@@ -60,7 +61,7 @@ export class VouchersService {
 
   async getItemvoucherForVoucher(_id: string) {
     if(!_id ){
-      throw new BadRequestException(`Bạn cần có id để thực hiện lấy dữ liệu`);
+      throw new BadRequestException(`Bạn cần có _id để thực hiện lấy dữ liệu`);
     }
     const voucher = await this.VoucherModal.find({_id: _id})
     .populate({
@@ -82,7 +83,7 @@ export class VouchersService {
   }
 
   async searchVoucher (searchVoucher : SearchVoucerDto) {
-    const {nameVoucher, _id, type, forAge, endedTime, startedTime} = searchVoucher
+    const {nameVoucher, _id, type, forAge, endedTime, startedTime, userCreateId} = searchVoucher
     if(!nameVoucher  && !_id  && !type && !forAge  && !endedTime && !startedTime ){
       throw new BadRequestException(`Bạn cần có ít nhất 1 giá trị để thực hiện tìm kiếm`);
     }
@@ -91,6 +92,7 @@ export class VouchersService {
     if (_id) query._id = _id;
     if (type) query.type = type;
     if (forAge) query.forAge = forAge;
+    if(userCreateId) query.userCreateId = userCreateId
     if(startedTime) {
       query.createdAt =  {
         $gte: new Date(startedTime),
@@ -113,12 +115,12 @@ export class VouchersService {
     if(filter.pageSize ) delete filter.pageSize;
     if(!current) current = 1;
     if(!pageSize) pageSize = 10;
-    const totalItems = (await this.VoucherModal.find(filter)).length;
+    const totalItems = (await this.VoucherModal.find(filter.belongTo !== "undefined" ? {userCreateId: filter.belongTo} : {})).length;
     const totalPages = Math.ceil(totalItems / pageSize);
     const skip = (current - 1) * (pageSize)
 
     const results : any= await this.VoucherModal
-    .find( filter)
+    .find( filter.belongTo !== "undefined" ? {userCreateId: filter.belongTo} : {})
     .sort({ createdAt: -1 })
     .limit(pageSize)
     .skip(skip)

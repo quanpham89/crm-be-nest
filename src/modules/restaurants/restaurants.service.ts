@@ -45,8 +45,26 @@ export class RestaurantsService {
   }
 
    async getAllRestaurant () {
-    return await this.RestaurantModel.find().select(" -createdAt -updatedAt -__v")
-   
+    const restaurant = await this.RestaurantModel.find()
+    .populate({
+      path: 'menuId', 
+      populate: {
+        path: 'menuItemId', 
+        select: 'nameItemMenu description sellingPrice fixedPrice image nameMenu menuId' 
+      },
+      select: 'nameItemMenu description sellingPrice fixedPrice image' 
+    })
+    .select("-createdAt -updatedAt -__v");
+    const formatData = restaurant.map(item => {
+      const { menuId, ...rest } = item.toObject(); 
+
+    return {
+      ...rest,
+      menu: menuId 
+    };
+    });
+  
+    return formatData;
   }
 
   async getRestaurantsById (_id: string) {
@@ -75,7 +93,6 @@ export class RestaurantsService {
     const totalItems = (await this.RestaurantModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / pageSize);
     const skip = (current - 1) * (pageSize)
-
     const results = await this.RestaurantModel
     .find( filter)
     .sort({ createdAt: -1 })

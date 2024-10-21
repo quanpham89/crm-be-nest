@@ -22,6 +22,9 @@ export class CreateCouponDto {
     @IsOptional()
     createdBy: string;
 
+    @IsOptional()
+    image: string;
+
     @IsOptional({message: "Ngày bắt đầu có hiệu lực không được để trống"})
     endedDate: Date;
 
@@ -53,5 +56,8 @@ export class SearchCouponDto{
 
     @IsOptional()
     endedTime: Date;
+
+    @IsOptional()
+    userCreateId:string
 
 }

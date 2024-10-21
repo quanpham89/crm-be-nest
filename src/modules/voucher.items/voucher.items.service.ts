@@ -15,6 +15,13 @@ export class VoucherItemsService {
     return 'This action adds a new menuItem';
   }
 
+  async getAllVoucherItems () {
+      const voucherItems = await this.VoucherItemsModal.find()
+      
+    
+      return voucherItems;
+  }
+
   findAll() {
     return `This action returns all menuItems`;
   }
