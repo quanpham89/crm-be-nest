@@ -84,6 +84,34 @@ export class RestaurantsService {
     return formattedRestaurant
   }
 
+  async getRestaurantWithMenuById (_id: string) {
+    const restaurants = await this.RestaurantModel.find({_id: _id})
+    .populate({
+      path: 'userId',
+      select: "-password"
+    }).populate('menuId').exec(); 
+    const formattedRestaurant = restaurants.map(restaurant => {
+      const { userId,menuId, ...rest } = restaurant.toObject(); 
+      return {
+          ...rest, 
+          user: userId,
+          menu: menuId
+      };
+    })
+    return formattedRestaurant
+  }
+
+  async getRestaurantRenderById (_id: string) {
+    const restaurants = await this.RestaurantModel.findOne({_id: _id}).populate('menuId').exec(); 
+    const { userId,menuId, ...rest } = restaurants.toObject(); 
+    const formattedRestaurant = {
+          ...rest, 
+          menu: menuId
+      };
+    return formattedRestaurant
+  }
+
+
   async findAll(query: string, current : number, pageSize: number) {
     const {filter, sort} = aqp(query);
     if(filter.current ) delete filter.current;

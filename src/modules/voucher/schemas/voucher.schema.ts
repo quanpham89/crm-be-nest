@@ -53,6 +53,10 @@ export class Voucher {
     @Prop({default: undefined})
     userGetVoucherId: string[];
 
+    @Prop({default: undefined})
+    restaurantId: string;
+
+
 }
 
 export const VoucherSchema = SchemaFactory.createForClass(Voucher);

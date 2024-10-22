@@ -27,6 +27,12 @@ export class VouchersController {
     return this.vouchersService.findVoucherPerPage(query, +current, +pageSize);
   }
 
+  @Get('/get-all-voucher')
+  @Public()
+  getAllVoucher() {
+    return this.vouchersService.getAllVoucher();
+  }
+
   @Get('/get-voucher-by-id')
   getItemvoucherForVoucher(@Query("_id") _id: string) {
     return this.vouchersService.getItemvoucherForVoucher(_id);

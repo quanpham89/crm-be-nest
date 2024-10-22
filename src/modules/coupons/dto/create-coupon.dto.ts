@@ -36,6 +36,7 @@ export class CreateCouponDto {
 
     @IsNotEmpty({message: "Phần trăm không được để trống "})
     discount: string
+
 }
 
 export class SearchCouponDto{

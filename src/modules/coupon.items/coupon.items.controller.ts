@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CouponItemsService } from './coupon.items.service';
 import { CreateCouponItemDto } from './dto/create-coupon.item.dto';
 import { UpdateCouponItemDto } from './dto/update-coupon.item.dto';
+import { Public } from '@/decorator/customize';
 
-@Controller('coupon.items')
+@Controller('coupon-items')
 export class CouponItemsController {
   constructor(private readonly couponItemsService: CouponItemsService) {}
 
@@ -12,9 +13,10 @@ export class CouponItemsController {
     return this.couponItemsService.create(createCouponItemDto);
   }
 
-  @Get()
-  findAll() {
-    return this.couponItemsService.findAll();
+  @Get("/get-all-coupon-items")
+  @Public()
+  getAllCouponItem() {
+    return this.couponItemsService.getAllCouponItem();
   }
 
   @Get(':id')

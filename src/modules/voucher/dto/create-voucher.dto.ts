@@ -37,7 +37,7 @@ export class CreateVoucherDto {
 
     @IsNotEmpty({message: "id người tạo không được để trống"})
     userCreateId: Date;
-
+    
 }
 
 export class SearchVoucerDto{

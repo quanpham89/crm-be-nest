@@ -124,9 +124,25 @@ export class MenusService {
         menuItem: menuItemId,
       };
     });
+    return formattedResults
+  }
 
-    
+  async getMenuBelongToRestaurant (_id: string){
+    const menus = await this.MenuModel.find({ restaurantId: _id })
+    .populate({
+      path: 'menuItemId',
+      select : "-updatedAt -createdAt -__v"
 
+    })
+    .select("-updatedAt -createdAt -__v").exec();
+
+    const formattedResults = menus.map(menu => {
+      const { menuItemId, ...rest } = menu.toObject();
+      return {
+        ...rest,
+        menuItem: menuItemId,
+      };
+    });
     return formattedResults
   }
 

@@ -8,12 +8,18 @@ import { InjectModel } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
 import {v4 as uuidv4} from "uuid"
 import aqp from 'api-query-params';
+import { User } from '../users/schemas/user.schema';
+import _ from 'lodash';
+import { Restaurant } from '../restaurants/schemas/restaurant.schema';
 
 @Injectable()
 export class CouponsService {
   constructor(
     @InjectModel(Coupon.name) private CouponModal: Model<Coupon>,
     @InjectModel(CouponItem.name) private CouponItemsModal: Model<CouponItem>,
+    @InjectModel(User.name) private UserModal: Model<User>,
+    @InjectModel(Restaurant.name) private RestaurantModal: Model<Restaurant>,
+
   ){}
 
   isNameExist = async (nameCoupon: String ) => {
@@ -23,16 +29,27 @@ export class CouponsService {
 
   async create(createCouponDto: CreateCouponDto) {
 
-     const { nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image } = createCouponDto;
+    const { nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image } = createCouponDto;
+    const user = await this.UserModal.findOne({_id: userCreateId})
 
     const isExist = await this.isNameExist(nameCoupon);
     if (isExist) {
         throw new BadRequestException(`Tên ${nameCoupon} đã tồn tại. Vui lòng sử dụng tên khác.`);
     }
+    if(user.restaurantId === null ){
+      throw new BadRequestException("Bạn cần tạo nhà hàng trước khi tạo coupon.")
+    }
 
     const coupons = await this.CouponModal.create({
-      nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image
+      nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image, restaurantId: user.role === "ADMINS" || user.role === "ADMIN" ? undefined : user.restaurantId
     });
+
+    // update listCouponId for restaurant
+    const listCouponId = await this.RestaurantModal.findOne({_id: user.restaurantId})
+    await this.RestaurantModal.updateOne(
+      {_id: user.restaurantId},
+      {couponId : [...listCouponId.voucherId, coupons._id]}
+    )
 
     let couponItemIdArray = [];
 
@@ -43,7 +60,7 @@ export class CouponsService {
             couponId: coupons._id,
             codeId,
             endedDate, startedDate,
-            image: "https://m.media-amazon.com/images/I/41EZgyu05hL._AC_UF1000,1000_QL80_.jpg"
+            image
         });
         couponItemIdArray.push(couponItem._id);
     }
@@ -86,6 +103,24 @@ export class CouponsService {
       };
   });
     return {results: formattedResults, totalItems, totalPages};
+  }
+
+  async getAllCoupon(){
+    const coupon = await this.CouponModal.find({status: "PUBLIC"})
+    .populate({
+      path: 'couponItemId',
+      select: '-updatedAt -createdAt -__v' 
+    })
+    .select('-updatedAt -createdAt -__v')
+    .exec();
+    const formattedCoupon = coupon.map((item : any) => {
+      const { couponItemId, ...rest } = item.toObject(); 
+      return {
+          ...rest, 
+          couponItems: couponItemId,
+      };
+    })
+    return formattedCoupon
   }
 
   async getItemCouponForCoupon(_id: string) {
@@ -158,7 +193,7 @@ export class CouponsService {
   async remove(_id: string) {
     if(
       mongoose.isValidObjectId(_id)){
-        await this.CouponItemsModal.deleteMany({voucherId: _id})
+        await this.CouponItemsModal.deleteMany({couponId: _id})
         return await this.CouponModal.deleteOne({_id})
     }else{
       throw new BadRequestException("Id không hợp lệ")

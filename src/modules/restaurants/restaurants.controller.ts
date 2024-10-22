@@ -37,6 +37,20 @@ export class RestaurantsController {
     return this.restaurantsService.getRestaurantsById(_id);
   }
 
+  @Get('/get-retaurant-with-menu-by-id')
+  @Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
+  getRestaurantWithMenuById(@Query("_id") _id: string) {
+    return this.restaurantsService.getRestaurantWithMenuById(_id);
+  }
+
+  
+
+  @Get('/get-retaurant-render-by-id')
+  @Public()
+  getRestaurantsById(@Query("_id") _id: string) {
+    return this.restaurantsService.getRestaurantRenderById(_id);
+  }
+
   @Patch('/update')
   update(@Body() updateRestaurantDto: UpdateRestaurantDto) {
     return this.restaurantsService.updateRestaurant(updateRestaurantDto);

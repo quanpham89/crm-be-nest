@@ -35,6 +35,12 @@ export class Restaurant {
     
     @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Menu', default: [] })
     menuId: string[];
+
+    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Voucher', default: [] })
+    voucherId: string[];
+
+    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Coupon', default: [] })
+    couponId: string[];
 }
 
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant);

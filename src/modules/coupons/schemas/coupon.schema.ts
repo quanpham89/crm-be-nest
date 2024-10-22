@@ -46,6 +46,9 @@ export class Coupon {
     @Prop({default: undefined})
     userGetCouponId: string[]
 
+    @Prop({default: undefined})
+    restaurantId: string;
+
 }
 
 export const CouponSchema = SchemaFactory.createForClass(Coupon);

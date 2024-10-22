@@ -14,7 +14,8 @@ export class CouponsController {
     return this.couponsService.create(createCouponDto);
   }
 
-  @Get()  findCouponPerPage(
+  @Get() 
+  findCouponPerPage(
     @Query() query:string,
     @Query("current") current:string,
     @Query("pageSize") pageSize:string,
@@ -22,7 +23,14 @@ export class CouponsController {
     return this.couponsService.findCouponPerPage(query, +current, +pageSize);
   }
 
-  @Get('/get-coupon-by-id')    getItemCouponForCoupon(@Query("_id") _id: string) {
+  @Get('/get-all-coupon')
+  @Public()
+  getAllCoupon() {
+    return this.couponsService.getAllCoupon();
+  }
+
+  @Get('/get-coupon-by-id')
+  getItemCouponForCoupon(@Query("_id") _id: string) {
     return this.couponsService.getItemCouponForCoupon(_id);
   }
 

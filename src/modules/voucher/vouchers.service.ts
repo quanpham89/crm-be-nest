@@ -8,13 +8,18 @@ import mongoose, { Model } from 'mongoose';
 import dayjs from 'dayjs';
 import {v4 as uuidv4} from "uuid"
 import aqp from 'api-query-params';
-
+import { User } from '../users/schemas/user.schema';
+import _ from "lodash"
+import { Restaurant } from '../restaurants/schemas/restaurant.schema';
 
 @Injectable()
 export class VouchersService {
   constructor(
     @InjectModel(Voucher.name) private VoucherModal: Model<Voucher>,
     @InjectModel(VoucherItem.name) private VoucherItemsModal: Model<VoucherItem>,
+    @InjectModel(User.name) private UserModal: Model<User>,
+    @InjectModel(Restaurant.name) private RestaurantModal: Model<Restaurant>,
+
   ){}
 
 
@@ -26,18 +31,29 @@ export class VouchersService {
 
   async create(createVoucherDto: CreateVoucherDto) {
     const { nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage, image} = createVoucherDto;
+    const user = (await this.UserModal.findOne({_id: userCreateId}))
 
     const isExist = await this.isNameExist(nameVoucher);
     if (isExist) {
         throw new BadRequestException(`Tên ${nameVoucher} đã tồn tại. Vui lòng sử dụng tên khác.`);
     }
 
+    if(user.restaurantId === null && user.role === "BUSINESSMAN"){
+      throw new BadRequestException("Bạn cần tạo nhà hàng trước khi tạo voucher.")
+    }
+
     const vouchers = await this.VoucherModal.create({
-        nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage, image
+        nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage, image, restaurantId: user.role === "ADMINS" || user.role === "ADMIN" ? undefined : user.restaurantId
     });
 
+    // update listvoucherId for restaurant
+    const listVoucherId = await this.RestaurantModal.findOne({_id: user.restaurantId})
+    await this.RestaurantModal.updateOne(
+      {_id: user.restaurantId},
+      {voucherId : [...listVoucherId.voucherId, vouchers._id]}
+    )
+
     let voucherItemIdArray = [];
-    console.log(image)
     for (let i = 0; i < +amount; i++) {
         const codeId = uuidv4();
         const voucherItem = await this.VoucherItemsModal.create({
@@ -58,6 +74,24 @@ export class VouchersService {
         _id: vouchers._id
     };
 }
+
+  async getAllVoucher(){
+    const voucher = await this.VoucherModal.find({status: "PUBLIC", restaurantId: undefined})
+    .populate({
+      path: 'voucherItemId',
+      select: '-updatedAt -createdAt -__v' 
+    })
+    .select('-updatedAt -createdAt -__v')
+    .exec();
+    const formattedVoucher = voucher.map((item : any) => {
+      const { voucherItemId, ...rest } = item.toObject(); 
+      return {
+          ...rest, 
+          voucherItems: voucherItemId,
+      };
+    })
+    return formattedVoucher
+  }
 
   async getItemvoucherForVoucher(_id: string) {
     if(!_id ){

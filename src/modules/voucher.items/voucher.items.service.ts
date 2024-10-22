@@ -16,7 +16,7 @@ export class VoucherItemsService {
   }
 
   async getAllVoucherItems () {
-      const voucherItems = await this.VoucherItemsModal.find()
+      const voucherItems = await this.VoucherItemsModal.find({status: "PUBLIC"})
       
     
       return voucherItems;

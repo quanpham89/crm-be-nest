@@ -1,3 +1,4 @@
+import { Public } from './../../decorator/customize';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { MenusService } from './menus.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
@@ -35,6 +36,12 @@ export class MenusController {
   @Get('/get-menu-by-id')
   getAllMenus(@Query("_id") _id: string) {
     return this.menusService.getAllMenus(_id);
+  }
+
+  @Get('/get-menu-belong-to-restaurant')
+  @Public()
+  getMenuBelongToRestaurant(@Query("_id") _id: string) {
+    return this.menusService.getMenuBelongToRestaurant(_id);
   }
 
 
