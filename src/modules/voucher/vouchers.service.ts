@@ -93,6 +93,29 @@ export class VouchersService {
     return formattedVoucher
   }
 
+  async getVoucherBelongRestaurant (_id: string) {
+    if(!_id ){
+      throw new BadRequestException(`Bạn cần có _id để thực hiện lấy dữ liệu`);
+    }
+    const voucher = await this.VoucherModal.find({restaurantId: _id})
+    .populate({
+      path: 'voucherItemId',
+      select: '-updatedAt -createdAt -__v' 
+    })
+    .select('-updatedAt -createdAt -__v')
+    .exec();
+    const formattedVoucher = voucher.map((item : any) => {
+      const { voucherItemId, ...rest } = item.toObject(); 
+      voucherItemId.startedDate = item.startedDate
+      voucherItemId.endedDate = item.endedDate
+      return {
+          ...rest, 
+          voucherItems: voucherItemId,
+      };
+    })
+    return formattedVoucher
+  }
+
   async getItemvoucherForVoucher(_id: string) {
     if(!_id ){
       throw new BadRequestException(`Bạn cần có _id để thực hiện lấy dữ liệu`);

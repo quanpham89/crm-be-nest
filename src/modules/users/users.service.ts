@@ -74,9 +74,12 @@ export class UsersService {
   }
 
   async findAllIdUser(){
-    const user = await this.userModel.find({}).select("_id name")
-    return user
+    const user = await this.userModel.find({
+      role : "BUSINESSMAN",
+      isActive: true
 
+      }).select("_id name")
+    return user
   }
 
   async findOne(_id: string) {
@@ -108,6 +111,7 @@ export class UsersService {
   }
 
   async updateUser( updateUserDto: UpdateUserDto) {
+
     return await this.userModel.updateOne({_id: updateUserDto._id}, {...updateUserDto})
   }
 

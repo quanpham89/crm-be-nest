@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { CustomersService } from './custormers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { Roles } from '@/decorator/customize';
+import { Public, Roles } from '@/decorator/customize';
 
 @Controller('custormers')
 @Roles('CUSTOMER')
@@ -12,6 +12,18 @@ export class CustomersController {
   @Post()
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customersService.create(createCustomerDto);
+  }
+
+  @Post("/add-voucher-for-customer")
+  @Public()
+  addVoucherForCustomer( @Body() data  : any) {
+    return this.customersService.addVoucherForCustomer(data);
+  }
+
+  @Post("/add-coupon-for-customer")
+  @Public()
+  addCouponForCustomer( @Body() data  : any) {
+    return this.customersService.addCouponForCustomer(data);
   }
 
   @Get()

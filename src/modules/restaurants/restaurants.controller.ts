@@ -31,13 +31,13 @@ export class RestaurantsController {
     return this.restaurantsService.getAllRestaurant();
   }
 
-  @Get('/get-retaurant-by-id')
+  @Get('/get-restaurant-by-id')
   @Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
   findOne(@Query("_id") _id: string) {
     return this.restaurantsService.getRestaurantsById(_id);
   }
 
-  @Get('/get-retaurant-with-menu-by-id')
+  @Get('/get-restaurant-with-menu-by-id')
   @Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
   getRestaurantWithMenuById(@Query("_id") _id: string) {
     return this.restaurantsService.getRestaurantWithMenuById(_id);
@@ -45,7 +45,7 @@ export class RestaurantsController {
 
   
 
-  @Get('/get-retaurant-render-by-id')
+  @Get('/get-restaurant-render-by-id')
   @Public()
   getRestaurantsById(@Query("_id") _id: string) {
     return this.restaurantsService.getRestaurantRenderById(_id);

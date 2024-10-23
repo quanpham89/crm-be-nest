@@ -31,4 +31,7 @@ export class UpdateUserDto  {
 
     @IsOptional()
     isActive: boolean
+
+    @IsOptional()
+    restaurantId: string
 }

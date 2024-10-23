@@ -37,6 +37,34 @@ export class CustomersService {
     }
   }
 
+  async addVoucherForCustomer (data : any) {
+    if(!data || !data.userId){
+      throw new BadRequestException ("Không xác định được khách hàng, vui lòng kiểm tra lại userId.")
+    }
+    const users = await this.CustomerModel.findOne({userId: data.userId})
+    let listVoucher = users.voucher
+    // check voucher đã được thêm chưa
+    if(listVoucher.length > 0 && listVoucher.includes(data._id)){
+      throw new BadRequestException ("Voucher đã được thêm, không thể tiếp tục thêm vào nữa.")
+    }
+    return await this.CustomerModel.updateOne({userId: data.userId}, {voucher: [...listVoucher, data._id]})
+  }
+
+  async addCouponForCustomer (data : any) {
+    if(!data || !data.userId){
+      throw new BadRequestException ("Không xác định được khách hàng, vui lòng kiểm tra lại userId.")
+    }
+    const users = await this.CustomerModel.findOne({userId: data.userId})
+    let listCoupon = users.coupon
+    // check coupon đã được thêm chưa
+    if(listCoupon.length>0 && listCoupon.includes(data._id)){
+      throw new BadRequestException ("Coupon đã được thêm, không thể tiếp tục thêm vào nữa.")
+    }
+    return await this.CustomerModel.updateOne({userId: data.userId}, {coupon: [...listCoupon, data._id]})
+
+
+  }
+
   update(id: number, updateCustomerDto: UpdateCustomerDto) {
     return `This action updates a #${id} menuItemOption`;
   }

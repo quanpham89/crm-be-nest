@@ -4,6 +4,8 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from '@/modules/users/schemas/user.schema';
 import { Review } from '@/modules/reviews/schemas/review.schema';
 import { MenuItem } from '@/modules/menu.items/schemas/menu.item.schema';
+import { Voucher } from '@/modules/voucher/schemas/voucher.schema';
+import { Coupon } from '@/modules/coupons/schemas/coupon.schema';
 
 export type CustomerDocument = HydratedDocument<Customer>;
 
@@ -14,19 +16,25 @@ export class Customer {
     userId: string;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: MenuItem.name })
-    menuItem: string;
+    menuItem: string[];
     
     @Prop()
     restaurantId: string;
 
     @Prop()
-    voucherId: string;
+    voucherId: string[];
 
     @Prop()
-    couponId: string;
+    couponId: string[];
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Review.name })
     review: string;
+
+    @Prop({  ref: Voucher.name })
+    voucher: string[];
+
+    @Prop({  ref: Coupon.name })
+    coupon: string[];
 
 
 }

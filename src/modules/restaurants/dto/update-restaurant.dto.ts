@@ -35,4 +35,7 @@ export class UpdateRestaurantDto  {
 
     @IsOptional()
     productType: string
+
+    @IsOptional()
+    restaurantId: string
 }

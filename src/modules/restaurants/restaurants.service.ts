@@ -7,6 +7,7 @@ import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
 import { User } from '../users/schemas/user.schema';
+import _ from 'lodash';
 
 
 @Injectable()
@@ -148,7 +149,20 @@ export class RestaurantsService {
   }
 
   async updateRestaurant( updateRestaurantDto: UpdateRestaurantDto) {
-    return await this.RestaurantModel.updateOne({_id: updateRestaurantDto._id}, {...updateRestaurantDto})
+    const {_id, ...rest} = updateRestaurantDto
+    const user = await this.UserModel.find({_id: updateRestaurantDto.userId})
+    const userHaveRestaurant = user.filter((item)=>(item.restaurantId !== null))
+    if(userHaveRestaurant.length > 0 ){
+      if(userHaveRestaurant[0].restaurantId !== _id){
+        throw new BadRequestException("Nguời dùng này đã có nhà hàng, vui lòng chọn người dùng khác.")
+      }
+      return await this.RestaurantModel.updateOne({_id: updateRestaurantDto._id}, {...rest})
+    }else{
+      await this.UserModel.updateOne({_id:  updateRestaurantDto.userId}, {restaurantId: updateRestaurantDto._id})
+      return await this.RestaurantModel.updateOne({_id: updateRestaurantDto._id}, {...updateRestaurantDto})
+
+    }
+
   }
 
   async deleteRestaurant (_id: string) {

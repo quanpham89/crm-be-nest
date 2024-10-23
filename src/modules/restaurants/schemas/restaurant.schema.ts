@@ -33,13 +33,13 @@ export class Restaurant {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null })
     userId: string;
     
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Menu', default: [] })
+    @Prop({  ref: 'Menu', default: [] })
     menuId: string[];
 
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Voucher', default: [] })
+    @Prop({  ref: 'Voucher', default: [] })
     voucherId: string[];
 
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Coupon', default: [] })
+    @Prop({  ref: 'Coupon', default: [] })
     couponId: string[];
 }
 

@@ -48,7 +48,7 @@ export class CouponsService {
     const listCouponId = await this.RestaurantModal.findOne({_id: user.restaurantId})
     await this.RestaurantModal.updateOne(
       {_id: user.restaurantId},
-      {couponId : [...listCouponId.voucherId, coupons._id]}
+      {couponId : [...listCouponId.couponId, coupons._id]}
     )
 
     let couponItemIdArray = [];
@@ -103,6 +103,29 @@ export class CouponsService {
       };
   });
     return {results: formattedResults, totalItems, totalPages};
+  }
+
+  async getCouponBelongToRestaurant (_id: string) {
+    if(!_id ){
+      throw new BadRequestException(`Bạn cần có _id để thực hiện lấy dữ liệu.`);
+    }
+    const coupon = await this.CouponModal.find({restaurantId: _id})
+    .populate({
+      path: 'couponItemId',
+      select: '-updatedAt -createdAt -__v' 
+    })
+    .select('-updatedAt -createdAt -__v')
+    .exec();
+    const formattedCoupon = coupon.map((item : any) => {
+      const { couponItemId, ...rest } = item.toObject(); 
+      couponItemId.startedDate = item.startedDate
+      couponItemId.endedDate = item.endedDate
+      return {
+          ...rest, 
+          couponItems: couponItemId,
+      };
+    })
+    return formattedCoupon
   }
 
   async getAllCoupon(){

@@ -46,14 +46,14 @@ export class User {
     @Prop()
     birthday: Date;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', default: null })
+    @Prop({ ref: 'Restaurant', default: null })
     restaurantId: string;
 
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Voucher.name })
-    voucher: mongoose.Schema.Types.ObjectId;
+    @Prop({  ref: Voucher.name })
+    voucher: string[];
 
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Coupon.name })
-    coupon: mongoose.Schema.Types.ObjectId;
+    @Prop({  ref: Coupon.name })
+    coupon: string[];
 
 }
 

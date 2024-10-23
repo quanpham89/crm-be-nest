@@ -7,18 +7,18 @@ import { Public, Roles } from '@/decorator/customize';
 @Controller('coupons')
 @Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
 export class CouponsController {
-  constructor(private readonly couponsService: CouponsService) {}
+  constructor(private readonly couponsService: CouponsService) { }
 
   @Post()
   create(@Body() createCouponDto: CreateCouponDto) {
     return this.couponsService.create(createCouponDto);
   }
 
-  @Get() 
+  @Get()
   findCouponPerPage(
-    @Query() query:string,
-    @Query("current") current:string,
-    @Query("pageSize") pageSize:string,
+    @Query() query: string,
+    @Query("current") current: string,
+    @Query("pageSize") pageSize: string,
   ) {
     return this.couponsService.findCouponPerPage(query, +current, +pageSize);
   }
@@ -29,34 +29,40 @@ export class CouponsController {
     return this.couponsService.getAllCoupon();
   }
 
+  @Get('/get-all-coupons-belong-to-restaurant')
+  @Public()
+  getCouponBelongToRestaurant(@Query("_id") _id: string,) {
+    return this.couponsService.getCouponBelongToRestaurant(_id);
+  }
   @Get('/get-coupon-by-id')
   getItemCouponForCoupon(@Query("_id") _id: string) {
     return this.couponsService.getItemCouponForCoupon(_id);
   }
 
-  @Get('/search')  searchCoupon(
-    @Query("searchValue") searchValue : string
+  @Get('/search') searchCoupon(
+    @Query("searchValue") searchValue: string
   ) {
-    let searchCoupon : SearchCouponDto = JSON.parse(searchValue)
+    let searchCoupon: SearchCouponDto = JSON.parse(searchValue)
     return this.couponsService.searchCoupon(searchCoupon);
   }
 
-  @Patch('/update')    update(@Body() updateCouponDto: UpdateCouponDto) {
+  @Patch('/update')
+  update(@Body() updateCouponDto: UpdateCouponDto) {
     return this.couponsService.update(updateCouponDto);
   }
 
-  @Patch('/soft-delete')  softDelete(@Query("_id") _id: string) {
+  @Patch('/soft-delete') softDelete(@Query("_id") _id: string) {
     return this.couponsService.softDelete(_id);
   }
 
-  
 
-    @Patch('/active-coupon')
+
+  @Patch('/active-coupon')
   activeVoucher(@Query("_id") _id: string) {
     return this.couponsService.activeCoupon(_id);
   }
 
-    @Delete('remove')
+  @Delete('remove')
   remove(@Query('_id') _id: string) {
     return this.couponsService.remove(_id);
   }
