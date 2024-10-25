@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 // import { UsersModule } from '@modules/users/users.module';
 import { UsersModule } from './modules/users/users.module';
 import { LikesModule } from './modules/likes/likes.module';
-import { CustormersModule } from './modules/customer/customers.module';
+import { CustomersModule } from './modules/customer/customers.module';
 import { MenuItemsModule } from './modules/menu.items/menu.items.module';
 import { MenusModule } from './modules/menus/menus.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -30,7 +30,7 @@ import { RolesGuard } from './auth/passport/roles.guard';
   imports: [
     UsersModule, 
     LikesModule,
-    CustormersModule,
+    CustomersModule,
     ReviewsModule,
     RestaurantsModule,
     MenuItemsModule,

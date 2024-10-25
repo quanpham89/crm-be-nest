@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { CustomersService } from './custormers.service';
+import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { Public, Roles } from '@/decorator/customize';
 
-@Controller('custormers')
+@Controller('customers')
 @Roles('CUSTOMER')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) { }
