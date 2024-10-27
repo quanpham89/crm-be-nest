@@ -35,7 +35,7 @@ export class MenuItem {
     @Prop({default: "PUBLIC"})
     status: string
 
-    @Prop({default: 10})
+    @Prop({default: 100})
     quantity: string;
 
 }

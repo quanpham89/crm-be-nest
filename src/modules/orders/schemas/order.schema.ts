@@ -41,8 +41,8 @@ export class Order {
     @Prop()
     paymentForm: string
     
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Restaurant.name })
-    orderDetailId: mongoose.Schema.Types.ObjectId;
+    @Prop({  ref: Restaurant.name })
+    orderDetailId: string[];
 
 }
 
