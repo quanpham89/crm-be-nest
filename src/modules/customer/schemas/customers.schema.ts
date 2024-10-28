@@ -21,12 +21,6 @@ export class Customer {
     @Prop()
     restaurantId: string;
 
-    @Prop()
-    voucherId: string[];
-
-    @Prop()
-    couponId: string[];
-
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Review.name })
     review: string;
 

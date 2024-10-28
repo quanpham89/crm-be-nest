@@ -44,6 +44,12 @@ export class VouchersController {
     return this.vouchersService.getItemvoucherForVoucher(_id);
   }
 
+  @Get('/get-voucher-create-by-admin')
+  @Roles('CUSTOMER')
+  getVoucherCreateByAdmin() {
+    return this.vouchersService.getVoucherCreateByAdmin();
+  }
+
   @Get('/search')
   searchVoucher(
     @Query("searchValue") searchValue : string,

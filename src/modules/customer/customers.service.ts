@@ -17,8 +17,31 @@ export class CustomersService {
     return 'This action adds a new menuItemOption';
   }
 
-  findAll() {
-    return `This action returns all menuItemOptions`;
+  async findAll() {
+   return ""
+  }
+
+  async getCustomerByUserId(_id: string) {
+    if(!_id){
+      throw new BadRequestException ("Không xác định được _id.")
+    }else{
+      const customer = await this.CustomerModel.findOne({userId: _id})
+      .populate({
+        path: "userId",
+        select: "name email role accountType sex image isActive"
+      })
+      .populate({
+        path: "voucher",
+        select: "-createdAt -updatedAt -__v -createdBy -status -image -forAge"
+      })
+      .populate({
+        path: "coupon",
+        select: "-createdAt -updatedAt -__v -createdBy -image -status"
+      })
+      .select("-createdAt -updatedAt -__v")
+      .exec()
+      return customer
+    }
   }
 
   async findOne(_id: string) {
@@ -34,6 +57,49 @@ export class CustomersService {
       .exec()
       const data = { _id: customer._id, user: customer.userId }; 
       return data
+    }
+    
+  }
+
+  async getVoucherCreateByAdmin (_id : string) {
+    if(!_id){
+      throw new BadRequestException ("Không xác định được _id.")
+    }else{
+      const customer = await this.CustomerModel.find({userId: _id})
+      .populate({
+        path: "voucher",
+        match: {restaurantId: undefined},
+        select: "-createdAt -updatedAt -__v",
+        populate: ({
+          path: "voucherItemId",
+          match: {status: "UNUSED"},
+          select: "-createdAt -updatedAt -__v",
+        })
+      })
+      .select("-createdAt -updatedAt -__v")
+      .exec()
+      return customer
+    }
+  }
+
+  async getCouponCreateByAdmin (_id : string) {
+    if(!_id){
+      throw new BadRequestException ("Không xác định được _id.")
+    }else{
+      const customer = await this.CustomerModel.find({userId: _id})
+      .populate({
+        path: "coupon",
+        match: {restaurantId: undefined},
+        select: "-createdAt -updatedAt -__v",
+        populate: ({
+          path: "couponItemId",
+          match: {status: "UNUSED"},
+          select: "-createdAt -updatedAt -__v",
+        })
+      })
+      .select("-createdAt -updatedAt -voucher -__v")
+      .exec()
+      return customer
     }
   }
 

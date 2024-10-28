@@ -20,6 +20,8 @@ export class CustomersController {
     return this.customersService.addVoucherForCustomer(data);
   }
 
+  
+
   @Post("/add-coupon-for-customer")
   @Public()
   addCouponForCustomer( @Body() data  : any) {
@@ -27,14 +29,32 @@ export class CustomersController {
   }
 
   @Get()
+  @Public()
   findAll() {
     return this.customersService.findAll();
+  }
+
+  @Get('/get-customer-by-user-id')
+  getCustomerByUserId(@Query('_id') _id: string) {
+    return this.customersService.getCustomerByUserId(_id);
   }
 
   @Get('/get-customer-by-id')
   findOne(@Query('_id') _id: string) {
     return this.customersService.findOne(_id);
   }
+
+  @Get('/get-voucher-create-by-admin')
+  getVoucherCreateByAdmin(@Query('_id') _id: string) {
+    return this.customersService.getVoucherCreateByAdmin(_id);
+  }
+
+  @Get('/get-coupon-create-by-admin')
+  getCouponCreateByAdmin(@Query('_id') _id: string) {
+    return this.customersService.getCouponCreateByAdmin(_id);
+  }
+
+ 
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {

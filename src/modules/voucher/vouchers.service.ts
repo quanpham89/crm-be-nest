@@ -139,6 +139,26 @@ export class VouchersService {
     return formattedVoucher
   }
 
+  async getVoucherCreateByAdmin () {
+    const voucher = await this.VoucherModal.find({restaurantId: undefined})
+    .populate({
+      path: 'voucherItemId',
+      select: '_id',
+    })
+    .select('-updatedAt -createdAt -__v')
+    .exec();
+    const formattedVoucher = voucher.map((item : any) => {
+      const { voucherItemId, ...rest } = item.toObject(); 
+      voucherItemId.startedDate = item.startedDate
+      voucherItemId.endedDate = item.endedDate
+      return {
+          ...rest, 
+          voucherItems: voucherItemId,
+      };
+    })
+    return formattedVoucher
+  }
+
   async searchVoucher (searchVoucher : SearchVoucerDto) {
     const {nameVoucher, _id, type, forAge, endedTime, startedTime, userCreateId} = searchVoucher
     if(!nameVoucher  && !_id  && !type && !forAge  && !endedTime && !startedTime ){
