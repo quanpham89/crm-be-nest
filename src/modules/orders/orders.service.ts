@@ -10,6 +10,7 @@ import { OrderDetail } from '../order.detail/schemas/order.detail.schema';
 import { Voucher } from '../voucher/schemas/voucher.schema';
 import { Coupon } from '../coupons/schemas/coupon.schema';
 import { Customer } from '../customer/schemas/customers.schema';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class OrdersService {
@@ -51,7 +52,7 @@ export class OrdersService {
 // so sanh thoi han voucher va coupon
 // khi get Coupon phai giam di 1
     const voucherDoc = await this.VoucherModel.findOne({_id: voucher});
-    if () {
+    if (dayjs(or).isBetween(start, end, null, '[]')) {
         throw new BadRequestException("Voucher không hợp lệ hoặc đã hết hạn.");
     }
     
