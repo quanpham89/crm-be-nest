@@ -11,7 +11,7 @@ import { Voucher } from '../voucher/schemas/voucher.schema';
 import { Coupon } from '../coupons/schemas/coupon.schema';
 import { Customer } from '../customer/schemas/customers.schema';
 import dayjs from 'dayjs';
-import isBetween  from "dayjs/plugin/isBetween";
+import isBetween from "dayjs/plugin/isBetween";
 
 @Injectable()
 export class OrdersService {
@@ -24,7 +24,7 @@ export class OrdersService {
     @InjectModel(Coupon.name) private CouponModel: Model<Customer>,
 
 
-   ){}
+  ) { }
   async create(createOrderDto: CreateOrderDto) {
     const {
       customerId,
@@ -39,29 +39,36 @@ export class OrdersService {
       coupon
     } = createOrderDto
     const listOrderDetailId = [];
-    const customer = await this.CustomerModel.findOne({_id: customerId})
-    if( customer?.voucherUse.includes(voucher) || customer?.couponUse.includes(coupon)){
-      throw new BadRequestException("Voucher hoặc Coupon này đã được dùng rồi.")
-    }
-    const listVoucherUse = [...customer.voucherUse, voucher]
-    const listCouponUse = [...customer.couponUse, coupon]
-    await this.CustomerModel.updateOne({_id: customerId}, {
-      couponUse: listCouponUse,
-      voucherUse: listVoucherUse
-    })
+    // khi get Coupon phai giam di 1
 
-// so sanh thoi han voucher va coupon
-// khi get Coupon phai giam di 1
-  dayjs.extend(isBetween);
-
-    const voucherDoc = await this.VoucherModel.findOne({_id: voucher});
-    if (dayjs(orderTime).isBetween(dayjs(voucherDoc.startedDate), dayjs(voucherDoc.endedDate), null, '[]')) {
-        throw new BadRequestException("Voucher không hợp lệ hoặc đã hết hạn.");
+    // check date coupon and voucher
+    if(voucher || coupon){
+      dayjs.extend(isBetween);
+      const voucherDoc: any = await this.VoucherModel.findOne({ _id: voucher });
+      if (!dayjs(orderTime).isBetween(dayjs(voucherDoc.startedDate), dayjs(voucherDoc.endedDate), null, '[]')) {
+        throw new BadRequestException("Voucher đã đã hết hạn sử dụng, vui lòng sử dụng voucher khác.");
+      }
+  
+      const couponDoc: any = await this.CouponModel.findOne({ _id: coupon });
+      if (!dayjs(orderTime).isBetween(dayjs(couponDoc.startedDate), dayjs(couponDoc.endedDate), null, '[]')) {
+        throw new BadRequestException("Coupon đã đã hết hạn sử dụng, vui lòng sử dụng coupon khác.");
+      }
+  
+      // check coupon, voucher đã được dùng chưa
+      const customer = await this.CustomerModel.findOne({ _id: customerId })
+      if (customer?.voucherUse.includes(voucher) || customer?.couponUse.includes(coupon)) {
+        throw new BadRequestException("Voucher hoặc Coupon này đã được dùng rồi.")
+      }
+      const listVoucherUse = [...customer.voucherUse, voucher]
+      const listCouponUse = [...customer.couponUse, coupon]
+      await this.CustomerModel.updateOne({ _id: customerId }, {
+        couponUse: listCouponUse,
+        voucherUse: listVoucherUse
+      })
     }
-    
 
     const order = await this.OrderModel.create({
-      customer : customerId,
+      customer: customerId,
       totalPrice,
       orderTime,
       predictionTime,
@@ -71,10 +78,10 @@ export class OrdersService {
       voucher,
       coupon
     })
-    if(order._id){
-      for(let i  = 0; i< cart.length;i++){
+    if (order._id) {
+      for (let i = 0; i < cart.length; i++) {
         const orderDetailId = await this.OrderDetailModel.create({
-          menuItem: cart[i]?.menuItemId ,
+          menuItem: cart[i]?.menuItemId,
           nameItemMenu: cart[i]?.nameItemMenu,
           restaurant: cart[i]?.restaurantId,
           restaurantName: cart[i]?.restaurantName,
@@ -83,11 +90,11 @@ export class OrdersService {
           amount: cart[i]?.amount,
           customer: customerId,
           sellingPrice: cart[i].sellingPrice,
-          order : order._id
+          order: order._id
         })
         listOrderDetailId.push(orderDetailId._id)
       }
-      await this.OrderModel.updateOne({_id: order._id}, {orderDetail: listOrderDetailId})
+      await this.OrderModel.updateOne({ _id: order._id }, { orderDetail: listOrderDetailId })
 
     }
     return {
@@ -95,13 +102,13 @@ export class OrdersService {
     }
   }
 
-  async findOrderById (_id: string){
-    const response = await this.OrderModel.find({customer: _id})
-    .populate({
-      path: 'orderDetail',
-      select: '-updatedAt -createdAt -__v',
+  async findOrderById(_id: string) {
+    const response = await this.OrderModel.find({ customer: _id })
+      .populate({
+        path: 'orderDetail',
+        select: '-updatedAt -createdAt -__v',
       }).exec()
-      return response
+    return response
   }
 
   findAll() {

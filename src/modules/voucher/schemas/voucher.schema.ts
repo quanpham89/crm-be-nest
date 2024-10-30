@@ -47,8 +47,8 @@ export class Voucher {
     @Prop({default: "ADMIN"})
     createdBy: string
 
-    @Prop({ type:[mongoose.Schema.Types.ObjectId], ref: VoucherItem.name })
-    voucherItemId: mongoose.Schema.Types.ObjectId[];
+    @Prop({ ref: VoucherItem.name })
+    voucherItemId: string[];
 
     @Prop({default: undefined})
     userCreateId: string;

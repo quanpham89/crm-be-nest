@@ -5,12 +5,18 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Customer } from './schemas/customers.schema';
 import { Model } from 'mongoose';
+import { Coupon } from '../coupons/schemas/coupon.schema';
+import { Voucher } from '../voucher/schemas/voucher.schema';
 
 @Injectable()
 export class CustomersService {
   constructor(
     private configService: ConfigService,
     @InjectModel(Customer.name) private CustomerModel: Model<Customer>,
+    @InjectModel(Coupon.name) private CouponModel: Model<Coupon>,
+    @InjectModel(Voucher.name) private VoucherModel: Model<Voucher>,
+
+
 
    ){}
   create(createCustomerDto: CreateCustomerDto) {
@@ -114,6 +120,9 @@ export class CustomersService {
     if(listVoucher.length > 0 && listVoucher.includes(data._id)){
       throw new BadRequestException ("Bạn đã có voucher này.")
     }
+
+    await this.VoucherModel.updateOne({ _id: data._id }, { $inc: { remain: -1 } });
+    
     return await this.CustomerModel.updateOne({userId: data.userId}, {voucher: [...listVoucher, data._id]})
   }
 
@@ -121,12 +130,15 @@ export class CustomersService {
     if(!data || !data.userId){
       throw new BadRequestException ("Không xác định được khách hàng, vui lòng kiểm tra lại userId.")
     }
+
     const users = await this.CustomerModel.findOne({userId: data.userId})
     let listCoupon = users.coupon
     // check coupon đã được thêm chưa
     if(listCoupon.length>0 && listCoupon.includes(data._id)){
       throw new BadRequestException ("Bạn đã có coupon này.")
     }
+    // giam di  so luong coupon con lai
+    await this.CouponModel.updateOne({ _id: data._id }, { $inc: { remain: -1 } });
     return await this.CustomerModel.updateOne({userId: data.userId}, {coupon: [...listCoupon, data._id]})
 
 
