@@ -56,6 +56,7 @@ export class CustomersService {
       .select("-createdAt -updatedAt -__v")
       .exec()
       const data = { _id: customer._id, user: customer.userId }; 
+      
       return data
     }
     
@@ -65,7 +66,7 @@ export class CustomersService {
     if(!_id){
       throw new BadRequestException ("Không xác định được _id.")
     }else{
-      const customer = await this.CustomerModel.find({userId: _id})
+      const vouchers = await this.CustomerModel.find({userId: _id})
       .populate({
         path: "voucher",
         match: {restaurantId: undefined},
@@ -76,9 +77,9 @@ export class CustomersService {
           select: "-createdAt -updatedAt -__v",
         })
       })
-      .select("-createdAt -updatedAt -__v")
+      .select("-createdAt -updatedAt -coupon -__v")
       .exec()
-      return customer
+      return vouchers
     }
   }
 
@@ -111,7 +112,7 @@ export class CustomersService {
     let listVoucher = users.voucher
     // check voucher đã được thêm chưa
     if(listVoucher.length > 0 && listVoucher.includes(data._id)){
-      throw new BadRequestException ("Voucher đã được thêm, không thể tiếp tục thêm vào nữa.")
+      throw new BadRequestException ("Bạn đã có voucher này.")
     }
     return await this.CustomerModel.updateOne({userId: data.userId}, {voucher: [...listVoucher, data._id]})
   }
@@ -124,7 +125,7 @@ export class CustomersService {
     let listCoupon = users.coupon
     // check coupon đã được thêm chưa
     if(listCoupon.length>0 && listCoupon.includes(data._id)){
-      throw new BadRequestException ("Coupon đã được thêm, không thể tiếp tục thêm vào nữa.")
+      throw new BadRequestException ("Bạn đã có coupon này.")
     }
     return await this.CustomerModel.updateOne({userId: data.userId}, {coupon: [...listCoupon, data._id]})
 

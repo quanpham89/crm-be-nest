@@ -30,6 +30,12 @@ export class Customer {
     @Prop({  ref: Coupon.name })
     coupon: string[];
 
+    @Prop({  ref: Voucher.name })
+    voucherUse: string[];
+
+    @Prop({  ref: Coupon.name })
+    couponUse: string[];
+
 
 }
 

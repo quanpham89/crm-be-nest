@@ -1,22 +1,16 @@
 import { IsEmail, IsNotEmpty, IsOptional } from "class-validator";
 export class CreateOrderDto {
     @IsNotEmpty({message: "userId không được để trống "})
-    userId: string;
-
-    @IsNotEmpty({message: "menuId không được để trống "})
-    menuId: string;
-
-    @IsNotEmpty({message: "ItemId không được để trống "})
-    menuItemId: string;
-
-    @IsNotEmpty({message: "restaurantId không được để trống "})
-    restaurantId: string;
+    customerId: string;
 
     @IsNotEmpty({message: "totalPrice không được để trống "})
-    totalPrice: string;
+    totalPrice: number;
 
     @IsNotEmpty({message: "orderTime không được để trống "})
     orderTime: Date;
+
+    @IsNotEmpty({message: "predictionTime không được để trống "})
+    predictionTime: string
 
     @IsNotEmpty({message: "paymentForm không được để trống "})
     paymentForm: string;
@@ -24,8 +18,17 @@ export class CreateOrderDto {
     @IsNotEmpty({message: "address không được để trống "})
     address: string;
 
+    @IsNotEmpty({message: "totalPrice không được để trống "})
+    totalWithoutDiscount : number;
+
+    @IsNotEmpty({message: "cart không được để trống "})
+    cart : any;
+
     @IsOptional()
-    deliveryTime: string
+    voucher: string
+
+    @IsOptional()
+    coupon: string
 
 }
 
@@ -33,3 +36,4 @@ export class CreateOrderDto {
 export class CreateRestaurantDto {
    
 }
+

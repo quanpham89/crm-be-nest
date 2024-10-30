@@ -6,73 +6,98 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Order } from './schemas/order.schema';
 import { Model } from 'mongoose';
 import { throwError } from 'rxjs';
+import { OrderDetail } from '../order.detail/schemas/order.detail.schema';
+import { Voucher } from '../voucher/schemas/voucher.schema';
+import { Coupon } from '../coupons/schemas/coupon.schema';
+import { Customer } from '../customer/schemas/customers.schema';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private configService: ConfigService,
     @InjectModel(Order.name) private OrderModel: Model<Order>,
+    @InjectModel(OrderDetail.name) private OrderDetailModel: Model<OrderDetail>,
+    @InjectModel(Customer.name) private CustomerModel: Model<Customer>,
+    @InjectModel(Voucher.name) private VoucherModel: Model<Customer>,
+    @InjectModel(Coupon.name) private CouponModel: Model<Customer>,
+
 
    ){}
   async create(createOrderDto: CreateOrderDto) {
     const {
-      restaurantId,
-      userId,
-      menuId,
-      menuItemId,
+      customerId,
       totalPrice,
       orderTime,
-      deliveryTime,
+      predictionTime,
+      paymentForm,
       address,
-      paymentForm } = createOrderDto
-    const order = await this.OrderModel.create({
-      restaurantId,
-      userId,
-      menuId,
-      menuItemId,
-      totalPrice,
-      orderTime,
-      deliveryTime,
-      address,
-      paymentForm
+      totalWithoutDiscount,
+      cart,
+      voucher,
+      coupon
+    } = createOrderDto
+    const listOrderDetailId = [];
+    const customer = await this.CustomerModel.findOne({_id: customerId})
+    if( customer?.voucherUse.includes(voucher) || customer?.couponUse.includes(coupon)){
+      throw new BadRequestException("Voucher hoặc Coupon này đã được dùng rồi.")
+    }
+    const listVoucherUse = [...customer.voucherUse, voucher]
+    const listCouponUse = [...customer.couponUse, coupon]
+    await this.CustomerModel.updateOne({_id: customerId}, {
+      couponUse: listCouponUse,
+      voucherUse: listVoucherUse
     })
+
+// so sanh thoi han voucher va coupon
+// khi get Coupon phai giam di 1
+    const voucherDoc = await this.VoucherModel.findOne({_id: voucher});
+    if () {
+        throw new BadRequestException("Voucher không hợp lệ hoặc đã hết hạn.");
+    }
+    
+
+    const order = await this.OrderModel.create({
+      customer : customerId,
+      totalPrice,
+      orderTime,
+      predictionTime,
+      paymentForm,
+      address,
+      totalWithoutDiscount,
+      voucher,
+      coupon
+    })
+    if(order._id){
+      for(let i  = 0; i< cart.length;i++){
+        const orderDetailId = await this.OrderDetailModel.create({
+          menuItem: cart[i]?.menuItemId ,
+          nameItemMenu: cart[i]?.nameItemMenu,
+          restaurant: cart[i]?.restaurantId,
+          restaurantName: cart[i]?.restaurantName,
+          menu: cart[i]?.menuId,
+          nameMenu: cart[i]?.nameMenu,
+          amount: cart[i]?.amount,
+          customer: customerId,
+          sellingPrice: cart[i].sellingPrice,
+          order : order._id
+        })
+        listOrderDetailId.push(orderDetailId._id)
+      }
+      await this.OrderModel.updateOne({_id: order._id}, {orderDetail: listOrderDetailId})
+
+    }
     return {
       _id: order._id
     }
   }
 
   async findOrderById (_id: string){
-    const response = await this.OrderModel.find({_id: _id})
+    const response = await this.OrderModel.find({customer: _id})
     .populate({
-      path: 'restaurantId',
+      path: 'orderDetail',
       select: '-updatedAt -createdAt -__v',
-      populate: {
-        path: 'menuId',
-        match: { _id: "67023d240f9780da45d7a43c" },
-        select: '-updatedAt -createdAt -__v',
-        populate: {
-          
-          path: 'menuItemId',
-          match: { _id: "67074737e8c68120e4cfb24b" },
-          select: '-updatedAt -createdAt -__v'
-        }
-      }
-
-
-    })
-    .populate({
-      path: 'userId',
-      select: '-updatedAt -createdAt -__v',
-    })
-    .select('-updatedAt -createdAt -__v')
-    .lean()
-    .exec();
-    if(response) {
+      }).exec()
       return response
-    }else{
-      throw new BadRequestException("order invalid")
-    }
-
   }
 
   findAll() {

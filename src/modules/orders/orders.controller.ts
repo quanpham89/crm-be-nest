@@ -5,7 +5,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Public, Roles } from '@/decorator/customize';
 
 @Controller('orders')
-@Roles('ADMINS', 'ADMIN')
+@Roles('ADMINS', 'ADMIN', "BUSINESSMAN", "CUSTOMER")
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
@@ -15,7 +15,7 @@ export class OrdersController {
   }
 
   @Get("/get-order-by-id")
-  findById(@Query("_id") _id:string, ) {
+  findById(@Query("_id") _id:string  ) {
     return this.ordersService.findOrderById(_id);
   }
 

@@ -18,6 +18,9 @@ export class Voucher {
     amount: number;
 
     @Prop()
+    remain: number;
+
+    @Prop()
     type: string;
 
     @Prop()

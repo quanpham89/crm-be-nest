@@ -31,10 +31,10 @@ export class VoucherItem {
     voucherId: string;
 
     @Prop({default: null})
-    customerId: string;
+    customer: string;
 
     @Prop({default: null})
-    itemUseId: string;
+    orderUse: string;
 }
 
 export const VoucherItemSchema = SchemaFactory.createForClass(VoucherItem);

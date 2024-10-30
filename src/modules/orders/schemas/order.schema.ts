@@ -6,22 +6,17 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Menu } from '@/modules/menus/schemas/menu.schema';
 import { MenuItem } from '@/modules/menu.items/schemas/menu.item.schema';
+import { Customer } from '@/modules/customer/schemas/customers.schema';
+import { OrderDetail } from '@/modules/order.detail/schemas/order.detail.schema';
+import { Voucher } from '@/modules/voucher/schemas/voucher.schema';
+import { Coupon } from '@/modules/coupons/schemas/coupon.schema';
 
 export type OrderDocument = HydratedDocument<Order>;
 
 @Schema({ timestamps: true })
 export class Order {
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Restaurant.name })
-    restaurantId: mongoose.Schema.Types.ObjectId;
-
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
-    userId: mongoose.Schema.Types.ObjectId;
-
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Menu.name })
-    menuId: string[];
-
-    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: MenuItem.name })
-    menuItemId: string[];
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Customer.name })
+    customer: mongoose.Schema.Types.ObjectId;
 
     @Prop({default: "PENDING"})
     status: string;
@@ -33,16 +28,33 @@ export class Order {
     orderTime: Date;
 
     @Prop()
-    deliveryTime: string;
+    predictionTime: Date;
 
     @Prop()
-    address: string;
-
+    receiveTime: Date;
+   
     @Prop()
     paymentForm: string
+
+    @Prop()
+    totalWithoutDiscount: number
     
-    @Prop({  ref: Restaurant.name })
-    orderDetailId: string[];
+    @Prop()
+    address: string;
+    
+    @Prop({  ref: OrderDetail.name })
+    orderDetail: string[];
+    
+    @Prop({  ref: Voucher.name })
+    voucher: string;
+
+    @Prop({  ref: Coupon.name })
+    coupon: string;
+    
+    
+    
+    
+    
 
 }
 

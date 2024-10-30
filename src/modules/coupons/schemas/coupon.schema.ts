@@ -17,6 +17,10 @@ export class Coupon {
     amount: number;
 
     @Prop()
+    remain: number;
+
+
+    @Prop()
     discount: number;
     
     @Prop()
