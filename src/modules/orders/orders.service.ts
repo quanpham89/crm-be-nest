@@ -11,6 +11,7 @@ import { Voucher } from '../voucher/schemas/voucher.schema';
 import { Coupon } from '../coupons/schemas/coupon.schema';
 import { Customer } from '../customer/schemas/customers.schema';
 import dayjs from 'dayjs';
+import isBetween  from "dayjs/plugin/isBetween";
 
 @Injectable()
 export class OrdersService {
@@ -51,8 +52,10 @@ export class OrdersService {
 
 // so sanh thoi han voucher va coupon
 // khi get Coupon phai giam di 1
+  dayjs.extend(isBetween);
+
     const voucherDoc = await this.VoucherModel.findOne({_id: voucher});
-    if (dayjs(or).isBetween(start, end, null, '[]')) {
+    if (dayjs(orderTime).isBetween(dayjs(voucherDoc.startedDate), dayjs(voucherDoc.endedDate), null, '[]')) {
         throw new BadRequestException("Voucher không hợp lệ hoặc đã hết hạn.");
     }
     
