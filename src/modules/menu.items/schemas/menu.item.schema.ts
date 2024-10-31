@@ -36,7 +36,11 @@ export class MenuItem {
     status: string
 
     @Prop({default: 100})
-    quantity: string;
+    quantity: number;
+
+    @Prop({default: 100})
+    remain: number;
+
 
 }
 

@@ -21,10 +21,10 @@ export class CouponItem {
     couponId: string;
 
     @Prop({default: null})
-    customerId: string;
+    customer: string;
 
     @Prop({default: null})
-    itemUseId: string;
+    orderUse: string;
 
     @Prop()
     usedTime: Date;

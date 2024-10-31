@@ -6,16 +6,18 @@ import { query } from 'express';
 import { Public, Roles } from '@/decorator/customize';
 
 @Controller('users')
-@Roles('ADMINS', 'ADMIN')
+@Roles('ADMINS', 'ADMIN', "BUSINESSMAN", "CUSTOMER")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @Roles('ADMINS', 'ADMIN')
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
+  @Roles('ADMINS', 'ADMIN')
   findAll(
     @Query() query:string,
     @Query("current") current:string,
@@ -25,12 +27,14 @@ export class UsersController {
   }
 
   @Get("/get-all-users")
+  @Roles('ADMINS', 'ADMIN')
   @Public()
   findAllIdUser() {
     return this.usersService.findAllIdUser();
   }
 
   @Get("/get-user-by-id")
+  @Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
   findOne(@Query("_id") _id: string) {
     return this.usersService.findOne(_id);
   }
@@ -49,6 +53,7 @@ export class UsersController {
   }
 
   @Delete('/remove-user')
+  @Roles('ADMINS', 'ADMIN')
   remove(@Query("_id") _id:string) {
     return this.usersService.remove(_id);
   }

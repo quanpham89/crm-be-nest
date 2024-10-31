@@ -34,7 +34,7 @@ export class CustomersService {
       const customer = await this.CustomerModel.findOne({userId: _id})
       .populate({
         path: "userId",
-        select: "name email role accountType sex image isActive"
+        select: "name email role accountType sex image isActive phone address" 
       })
       .populate({
         path: "voucher",
@@ -57,7 +57,7 @@ export class CustomersService {
       const customer = await this.CustomerModel.findOne({userId: _id})
       .populate({
         path: "userId",
-        select: "name email role accountType sex image isActive"
+        select: "name email role accountType sex image isActive phone address"
       })
       .select("-createdAt -updatedAt -__v")
       .exec()

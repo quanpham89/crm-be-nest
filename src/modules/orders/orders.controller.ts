@@ -29,10 +29,19 @@ export class OrdersController {
     return this.ordersService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
+
+
+  @Patch("/close-order")
+  handleCloseOrder(@Query("_id") _id: string) {
+    return this.ordersService.handleCloseOrder(_id);
   }
+
+  @Patch("/receive-order")
+  handleReceiveOrder( @Query("_id") _id: string) {
+    console.log("receive")
+    return this.ordersService.handleReceiveOrder(_id);
+  }
+
 
   @Delete(':id')
   remove(@Param('id') id: string) {

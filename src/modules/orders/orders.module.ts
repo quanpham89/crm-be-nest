@@ -7,6 +7,8 @@ import { OrderDetail, OrderDetailSchema } from '../order.detail/schemas/order.de
 import { Customer, CustomerSchema } from '../customer/schemas/customers.schema';
 import { Coupon, CouponSchema } from '../coupons/schemas/coupon.schema';
 import { Voucher, VoucherSchema } from '../voucher/schemas/voucher.schema';
+import { CouponItem, CouponItemSchema } from '../coupon.items/schemas/coupon.item.schema';
+import { VoucherItem, VoucherItemSchema } from '../voucher.items/schemas/voucher.item.schema';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -15,6 +17,9 @@ import { Voucher, VoucherSchema } from '../voucher/schemas/voucher.schema';
     { name: Customer.name, schema: CustomerSchema },
     { name: Voucher.name, schema: VoucherSchema },
     { name: Coupon.name, schema: CouponSchema },
+    { name: CouponItem.name, schema: CouponItemSchema },
+    { name: VoucherItem.name, schema: VoucherItemSchema },
+
 
 
 

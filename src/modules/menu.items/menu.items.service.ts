@@ -34,7 +34,7 @@ export class MenuItemsService {
   async createItemMenu(createMenuItemDto: CreateMenuItemDto) {
     const {nameItemMenu, description , image , sellingPrice, fixedPrice, menuId, deleteUrl, nameMenu, status, quantity } = createMenuItemDto
     const menuItems  = await this.MenuItemModel.create({
-      nameItemMenu, description , sellingPrice, fixedPrice, menuId, deleteUrl, nameMenu, image, status, quantity
+      nameItemMenu, description , sellingPrice, fixedPrice, menuId, deleteUrl, nameMenu, image, status, quantity, remain: quantity
     })
     return {
       _id: menuItems._id,
@@ -43,6 +43,7 @@ export class MenuItemsService {
   }
 
   async create(data: any){
+    console.log(data)
     for(let i = 0;i<data.menuItem.length;i++){
       const response = await this.covertImageToUrl(data.menuItem[i].image, data.menuItem[i].nameItemMenu)
         const formatDataItemMenu = {
@@ -54,7 +55,9 @@ export class MenuItemsService {
           image: response?.display_url,
           deleteUrl: response?.delete_url,
           nameMenu : data?.nameMenu,
-          status : "PUBLIC"
+          status : data?.menuItem[i]?.status,
+          quantity: data?.menuItem[i]?.quantity,
+          remain: data?.menuItem[i]?.quantity
         }
 
         const menuItems  = await this.MenuItemModel.create({

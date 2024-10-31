@@ -12,6 +12,8 @@ import { Coupon } from '../coupons/schemas/coupon.schema';
 import { Customer } from '../customer/schemas/customers.schema';
 import dayjs from 'dayjs';
 import isBetween from "dayjs/plugin/isBetween";
+import { CouponItem } from '../coupon.items/schemas/coupon.item.schema';
+import { VoucherItem } from '../voucher.items/schemas/voucher.item.schema';
 
 @Injectable()
 export class OrdersService {
@@ -22,7 +24,8 @@ export class OrdersService {
     @InjectModel(Customer.name) private CustomerModel: Model<Customer>,
     @InjectModel(Voucher.name) private VoucherModel: Model<Customer>,
     @InjectModel(Coupon.name) private CouponModel: Model<Customer>,
-
+    @InjectModel(CouponItem.name) private CouponItemModel: Model<CouponItem>,
+    @InjectModel(VoucherItem.name) private VoucherItemModel: Model<VoucherItem>,
 
   ) { }
   async create(createOrderDto: CreateOrderDto) {
@@ -39,26 +42,49 @@ export class OrdersService {
       coupon
     } = createOrderDto
     const listOrderDetailId = [];
-    // khi get Coupon phai giam di 1
+
+    const voucherDoc: any = await this.VoucherModel.findOne({ _id: voucher })
+    .populate({
+      path: "voucherItemId",
+      match: {
+        status: "UNUSED",
+        customer: null,
+        orderUse: null
+      },
+      select: "_id status customer orderUse"
+    }).exec();
+    const couponDoc: any = await this.CouponModel.findOne({ _id: coupon })
+      .populate({
+        path: "couponItemId",
+
+        select: "_id status customer orderUse"
+      }).exec();
+      let voucherItem  = ""
+      let couponItem  = ""
 
     // check date coupon and voucher
     if(voucher || coupon){
       dayjs.extend(isBetween);
-      const voucherDoc: any = await this.VoucherModel.findOne({ _id: voucher });
       if (!dayjs(orderTime).isBetween(dayjs(voucherDoc.startedDate), dayjs(voucherDoc.endedDate), null, '[]')) {
         throw new BadRequestException("Voucher đã đã hết hạn sử dụng, vui lòng sử dụng voucher khác.");
       }
   
-      const couponDoc: any = await this.CouponModel.findOne({ _id: coupon });
+      
       if (!dayjs(orderTime).isBetween(dayjs(couponDoc.startedDate), dayjs(couponDoc.endedDate), null, '[]')) {
         throw new BadRequestException("Coupon đã đã hết hạn sử dụng, vui lòng sử dụng coupon khác.");
       }
   
       // check coupon, voucher đã được dùng chưa
+      
       const customer = await this.CustomerModel.findOne({ _id: customerId })
-      if (customer?.voucherUse.includes(voucher) || customer?.couponUse.includes(coupon)) {
-        throw new BadRequestException("Voucher hoặc Coupon này đã được dùng rồi.")
+      
+      if (customer?.voucherUse.includes(voucher)) {
+        throw new BadRequestException("Voucher này đã được dùng rồi.")
       }
+      if ( customer?.couponUse.includes(coupon)) {
+        throw new BadRequestException("Coupon này đã được dùng rồi.")
+      }
+
       const listVoucherUse = [...customer.voucherUse, voucher]
       const listCouponUse = [...customer.couponUse, coupon]
       await this.CustomerModel.updateOne({ _id: customerId }, {
@@ -95,6 +121,29 @@ export class OrdersService {
         listOrderDetailId.push(orderDetailId._id)
       }
       await this.OrderModel.updateOne({ _id: order._id }, { orderDetail: listOrderDetailId })
+      if(voucher && voucherDoc.voucherItemId && voucherDoc.voucherItemId.length > 0){
+        voucherItem = voucherDoc.voucherItemId[0]._id
+        await this.VoucherItemModel.updateOne({_id: voucherItem}, {
+          customer: customerId, 
+          orderUse: order._id,
+          status: "USED",
+          usedTime: orderTime
+        })
+      }else{
+        throw new BadRequestException("Không tìm được voucherItem.")
+      }
+
+      if(coupon && couponDoc.couponItemId && couponDoc.couponItemId.length > 0){
+        couponItem = couponDoc.couponItemId[0]._id
+        await this.CouponItemModel.updateOne({_id: couponItem}, {
+          customer: customerId, 
+          orderUse: order._id,
+          status: "USED",
+          usedTime: orderTime
+        })
+      }else{
+        throw new BadRequestException("Không tìm được couponItem.")
+      }
 
     }
     return {
@@ -111,6 +160,25 @@ export class OrdersService {
     return response
   }
 
+  async handleCloseOrder (_id: string){
+    if(_id){
+      return await this.OrderModel.updateOne({_id: _id}, {
+        status: "CANCLE"
+      })
+    }else{
+      throw new BadRequestException("Không xác định được _id order.")
+    }
+  }
+
+  async handleReceiveOrder (_id: string){
+    if(_id){
+    return await this.OrderModel.updateOne({_id: _id}, {
+      status: "COMPLETE"
+    })
+    }else{
+      throw new BadRequestException("Không xác định được _id order.")
+    }
+  }
   findAll() {
     return `This action returns all orders`;
   }

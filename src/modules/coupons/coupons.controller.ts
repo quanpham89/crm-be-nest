@@ -51,7 +51,8 @@ export class CouponsController {
     return this.couponsService.update(updateCouponDto);
   }
 
-  @Patch('/soft-delete') softDelete(@Query("_id") _id: string) {
+  @Patch('/soft-delete') 
+  softDelete(@Query("_id") _id: string) {
     return this.couponsService.softDelete(_id);
   }
 

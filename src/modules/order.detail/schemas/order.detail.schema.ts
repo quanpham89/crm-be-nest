@@ -15,7 +15,7 @@ export type OrderDetailDocument = HydratedDocument<OrderDetail>;
 
 @Schema({ timestamps: true })
 export class OrderDetail {
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Order" })
+    @Prop({ ref: "Order" })
     order: mongoose.Schema.Types.ObjectId;
 
     @Prop({ ref: MenuItem.name })
@@ -43,8 +43,8 @@ export class OrderDetail {
     @Prop()
     amount: number
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Customer.name })
-    customer: mongoose.Schema.Types.ObjectId;
+    @Prop({ ref: Customer.name })
+    customer: string;
 
     @Prop({  ref: Review.name, default: undefined })
     review: string[];
