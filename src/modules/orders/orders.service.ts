@@ -43,7 +43,7 @@ export class OrdersService {
     } = createOrderDto
     const listOrderDetailId = [];
 
-    const voucherDoc: any = await this.VoucherModel.findOne({ _id: voucher })
+    const voucherDoc: any = voucher && await this.VoucherModel.findOne({ _id: voucher })
     .populate({
       path: "voucherItemId",
       match: {
@@ -53,7 +53,7 @@ export class OrdersService {
       },
       select: "_id status customer orderUse"
     }).exec();
-    const couponDoc: any = await this.CouponModel.findOne({ _id: coupon })
+    const couponDoc: any = coupon && await this.CouponModel.findOne({ _id: coupon })
       .populate({
         path: "couponItemId",
 
@@ -65,12 +65,12 @@ export class OrdersService {
     // check date coupon and voucher
     if(voucher || coupon){
       dayjs.extend(isBetween);
-      if (!dayjs(orderTime).isBetween(dayjs(voucherDoc.startedDate), dayjs(voucherDoc.endedDate), null, '[]')) {
+      if (voucherDoc && !dayjs(orderTime).isBetween(dayjs(voucherDoc.startedDate), dayjs(voucherDoc.endedDate), null, '[]')) {
         throw new BadRequestException("Voucher đã đã hết hạn sử dụng, vui lòng sử dụng voucher khác.");
       }
   
       
-      if (!dayjs(orderTime).isBetween(dayjs(couponDoc.startedDate), dayjs(couponDoc.endedDate), null, '[]')) {
+      if (couponDoc && !dayjs(orderTime).isBetween(dayjs(couponDoc.startedDate), dayjs(couponDoc.endedDate), null, '[]')) {
         throw new BadRequestException("Coupon đã đã hết hạn sử dụng, vui lòng sử dụng coupon khác.");
       }
   
@@ -78,15 +78,15 @@ export class OrdersService {
       
       const customer = await this.CustomerModel.findOne({ _id: customerId })
       
-      if (customer?.voucherUse.includes(voucher)) {
+      if (voucher && customer?.voucherUse.includes(voucher)) {
         throw new BadRequestException("Voucher này đã được dùng rồi.")
       }
-      if ( customer?.couponUse.includes(coupon)) {
+      if (coupon &&  customer?.couponUse.includes(coupon)) {
         throw new BadRequestException("Coupon này đã được dùng rồi.")
       }
 
-      const listVoucherUse = [...customer.voucherUse, voucher]
-      const listCouponUse = [...customer.couponUse, coupon]
+      const listVoucherUse = [...customer.voucherUse, voucher && voucher]
+      const listCouponUse = [...customer.couponUse, coupon && coupon]
       await this.CustomerModel.updateOne({ _id: customerId }, {
         couponUse: listCouponUse,
         voucherUse: listVoucherUse
@@ -116,34 +116,41 @@ export class OrdersService {
           amount: cart[i]?.amount,
           customer: customerId,
           sellingPrice: cart[i].sellingPrice,
-          order: order._id
+          order: order._id,
+          paymentForm: paymentForm,
+          orderTime: orderTime,
+          predictionTime: predictionTime,
+          status: "PENDING"
+
         })
         listOrderDetailId.push(orderDetailId._id)
       }
       await this.OrderModel.updateOne({ _id: order._id }, { orderDetail: listOrderDetailId })
-      if(voucher && voucherDoc.voucherItemId && voucherDoc.voucherItemId.length > 0){
-        voucherItem = voucherDoc.voucherItemId[0]._id
-        await this.VoucherItemModel.updateOne({_id: voucherItem}, {
-          customer: customerId, 
-          orderUse: order._id,
-          status: "USED",
-          usedTime: orderTime
-        })
-      }else{
-        throw new BadRequestException("Không tìm được voucherItem.")
+      if(voucher){
+        if(voucher && voucherDoc.voucherItemId && voucherDoc.voucherItemId.length > 0){
+          voucherItem = voucherDoc.voucherItemId[0]._id
+          await this.VoucherItemModel.updateOne({_id: voucherItem}, {
+            customer: customerId, 
+            orderUse: order._id,
+            status: "USED",
+            usedTime: orderTime
+          })
+        }
+      }
+      if(coupon){
+        if( couponDoc.couponItemId && couponDoc.couponItemId.length > 0){
+          couponItem = couponDoc.couponItemId[0]._id
+          await this.CouponItemModel.updateOne({_id: couponItem}, {
+            customer: customerId, 
+            orderUse: order._id,
+            status: "USED",
+            usedTime: orderTime
+          })
+        }else{
+          throw new BadRequestException("Không tìm được couponItem.")
+        }
       }
 
-      if(coupon && couponDoc.couponItemId && couponDoc.couponItemId.length > 0){
-        couponItem = couponDoc.couponItemId[0]._id
-        await this.CouponItemModel.updateOne({_id: couponItem}, {
-          customer: customerId, 
-          orderUse: order._id,
-          status: "USED",
-          usedTime: orderTime
-        })
-      }else{
-        throw new BadRequestException("Không tìm được couponItem.")
-      }
 
     }
     return {

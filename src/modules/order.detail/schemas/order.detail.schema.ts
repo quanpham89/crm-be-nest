@@ -46,6 +46,19 @@ export class OrderDetail {
     @Prop({ ref: Customer.name })
     customer: string;
 
+    @Prop()
+    orderTime: Date;
+
+    @Prop()
+    predictionTime: Date
+
+    @Prop()
+    paymentForm: string;
+
+    @Prop({default: "PENDING"})
+    status: string;
+
+
     @Prop({  ref: Review.name, default: undefined })
     review: string[];
 

@@ -6,6 +6,7 @@ import { Order } from '../orders/schemas/order.schema';
 import { OrderDetail } from './schemas/order.detail.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Customer } from '../customer/schemas/customers.schema';
 
 @Injectable()
 export class OrderDetailService {
@@ -13,6 +14,7 @@ export class OrderDetailService {
     private configService: ConfigService,
     @InjectModel(Order.name) private OrderModel: Model<Order>,
     @InjectModel(OrderDetail.name) private OrderDetailModel: Model<OrderDetail>,
+    @InjectModel(Customer.name) private CustomerModel: Model<Customer>,
     
 
   ) { }
@@ -23,14 +25,20 @@ export class OrderDetailService {
 
   async getDataOrderDetailByRestaurantId (_id: string){
     const orderDetails = await this.OrderDetailModel.find({restaurant: _id})
-    const order = orderDetails[0]._id ? await this.OrderModel.findOne({_id: orderDetails[0].order}) : {}
-    console.log(orderDetails[0])
+     .populate({
+      path: "customer",
+      select: "-createdAt -updatedAt -coupon -voucher",
+      populate: ({
+        path: "userId",
+        select : "name"
+      })
+    })
+    .lean()
+    return orderDetails
+  }
 
-    return {
-      order: order,
-      orderDetails: orderDetails
-    }
-
+  async changeStatusOrderDetailItem (data: any){
+    console.log(data)
 
   }
 

@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { OrderDetailService } from './order.detail.service';
 import { CreateOrderDetailDto } from './dto/create-order.detail.dto';
 import { UpdateOrderDetailDto } from './dto/update-order.detail.dto';
+import { Roles } from '@/decorator/customize';
 
 @Controller('order-detail')
+@Roles('ADMIN',"BUSINESSMAN")
 export class OrderDetailController {
   constructor(private readonly orderDetailService: OrderDetailService) { }
 
@@ -22,9 +24,9 @@ export class OrderDetailController {
     return this.orderDetailService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDetailDto: UpdateOrderDetailDto) {
-    return this.orderDetailService.update(+id, updateOrderDetailDto);
+  @Post("/change-order-detail-status")
+  changeStatusOrderDetailItem(@Body() data :any) {
+    return this.orderDetailService.changeStatusOrderDetailItem(data);
   }
 
   @Delete(':id')
