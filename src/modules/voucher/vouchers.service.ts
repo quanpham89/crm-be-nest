@@ -159,8 +159,8 @@ export class VouchersService {
     return formattedVoucher
   }
 
-  async searchVoucher (searchVoucher : SearchVoucerDto) {
-    const {nameVoucher, _id, type, forAge, endedTime, startedTime, userCreateId} = searchVoucher
+  async searchVoucher (searchVoucher : any) {
+    const {nameVoucher, _id, type, forAge, endedTime, startedTime, userCreateId, belongTo} = searchVoucher
     if(!nameVoucher  && !_id  && !type && !forAge  && !endedTime && !startedTime ){
       throw new BadRequestException(`Bạn cần có ít nhất 1 giá trị để thực hiện tìm kiếm`);
     }
@@ -169,7 +169,7 @@ export class VouchersService {
     if (_id) query._id = _id;
     if (type) query.type = type;
     if (forAge) query.forAge = forAge;
-    if(userCreateId) query.userCreateId = userCreateId
+    if(belongTo) query.userCreateId = belongTo
     if(startedTime) {
       query.createdAt =  {
         $gte: new Date(startedTime),
@@ -177,8 +177,10 @@ export class VouchersService {
       }
     }
     const vouchers = await this.VoucherModal.find({...query})
+    const totalItems = vouchers.length
     return {
-      vouchers
+      vouchers,
+      totalItems
     }
   }
 

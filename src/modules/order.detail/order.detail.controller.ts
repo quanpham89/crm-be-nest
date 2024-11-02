@@ -15,8 +15,13 @@ export class OrderDetailController {
   }
 
   @Get("/get-data-order-detail")
-  getDataOrderDetailByRestaurantId(@Query("_id") _id: string) {
-    return this.orderDetailService.getDataOrderDetailByRestaurantId(_id);
+  getDataOrderDetailByRestaurantId(
+    @Query("_id") _id:string,
+    @Query() query:string,
+    @Query("current") current:string,
+    @Query("pageSize") pageSize:string,
+  ) {
+    return this.orderDetailService.getDataOrderDetailByRestaurantId(_id, query, +current, +pageSize);
   }
 
   @Get(':id')

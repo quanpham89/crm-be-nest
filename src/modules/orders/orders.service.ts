@@ -179,9 +179,11 @@ export class OrdersService {
 
   async handleReceiveOrder (_id: string){
     if(_id){
-    return await this.OrderModel.updateOne({_id: _id}, {
-      status: "COMPLETE"
+      console.log(_id)
+    await this.OrderModel.updateOne({_id: _id}, {
+      status: "RECEIVE"
     })
+    await this.OrderDetailModel.updateMany({order: _id}, {status: "RECEIVE"})
     }else{
       throw new BadRequestException("Không xác định được _id order.")
     }

@@ -39,11 +39,10 @@ export class CouponsController {
     return this.couponsService.getItemCouponForCoupon(_id);
   }
 
-  @Get('/search') searchCoupon(
-    @Query("searchValue") searchValue: string
+  @Post('/search') searchCoupon(
+    @Body() data : any
   ) {
-    let searchCoupon: SearchCouponDto = JSON.parse(searchValue)
-    return this.couponsService.searchCoupon(searchCoupon);
+    return this.couponsService.searchCoupon(data);
   }
 
   @Patch('/update')

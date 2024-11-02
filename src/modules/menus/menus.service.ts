@@ -78,7 +78,8 @@ export class MenusService {
     if (filter.pageSize) delete filter.pageSize;
     if (!current) current = 1;
     if (!pageSize) pageSize = 10;
-    const totalItems = (await this.MenuModel.find(filter)).length;
+    const totalItems = (await this.MenuModel
+      .find({restaurantId: filter.belongTo})).length;
     const totalPages = Math.ceil(totalItems / pageSize);
     const skip = (current - 1) * (pageSize)
     const results = await this.MenuModel
@@ -128,7 +129,7 @@ export class MenusService {
   }
 
   async getMenuBelongToRestaurant (_id: string){
-    const menus = await this.MenuModel.find({ restaurantId: _id })
+    const menus = await this.MenuModel.find({ restaurantId: _id, status: "PUBLIC"})
     .populate({
       path: 'menuItemId',
       select : "-updatedAt -createdAt -__v"

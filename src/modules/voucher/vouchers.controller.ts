@@ -50,13 +50,9 @@ export class VouchersController {
     return this.vouchersService.getVoucherCreateByAdmin();
   }
 
-  @Get('/search')
-  searchVoucher(
-    @Query("searchValue") searchValue : string,
-    @Query("belongTo") belongTo : string
-  ) {
-    let searchVoucher : SearchVoucerDto = JSON.parse(searchValue)
-    return this.vouchersService.searchVoucher(searchVoucher);
+  @Post('/search')
+  searchVoucher(@Body() data : any) {    
+    return this.vouchersService.searchVoucher(data);
   }
 
   @Patch('/update')

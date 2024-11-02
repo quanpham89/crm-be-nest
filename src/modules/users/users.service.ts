@@ -76,7 +76,8 @@ export class UsersService {
   async findAllIdUser(){
     const user = await this.userModel.find({
       role : "BUSINESSMAN",
-      isActive: true
+      isActive: true,
+      restaurantId: null
 
       }).select("_id name")
     return user

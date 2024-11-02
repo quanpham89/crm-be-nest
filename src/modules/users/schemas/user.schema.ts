@@ -46,14 +46,8 @@ export class User {
     @Prop()
     birthday: Date;
 
-    @Prop({ ref: 'Restaurant', default: null })
+    @Prop({ ref: 'Restaurant', default: undefined })
     restaurantId: string;
-
-    @Prop({  ref: Voucher.name })
-    voucher: string[];
-
-    @Prop({  ref: Coupon.name })
-    coupon: string[];
 
 }
 

@@ -28,7 +28,6 @@ export class UsersController {
 
   @Get("/get-all-users")
   @Roles('ADMINS', 'ADMIN')
-  @Public()
   findAllIdUser() {
     return this.usersService.findAllIdUser();
   }

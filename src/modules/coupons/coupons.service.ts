@@ -129,7 +129,7 @@ export class CouponsService {
   }
 
   async getAllCoupon(){
-    const coupon = await this.CouponModal.find({status: "PUBLIC"})
+    const coupon = await this.CouponModal.find({status: "PUBLIC", restaurantId: undefined})
     .populate({
       path: 'couponItemId',
       select: '-updatedAt -createdAt -__v' 
@@ -169,8 +169,8 @@ export class CouponsService {
     return formattedCoupon
   }
 
-  async searchCoupon (searchCoupon : SearchCouponDto) {
-    const {nameCoupon, _id, scope, discount, endedTime, startedTime, userCreateId} = searchCoupon
+  async searchCoupon (searchCoupon : any) {
+    const {nameCoupon, _id, scope, discount, endedTime, startedTime, belongTo} = searchCoupon
     if(!nameCoupon  && !_id  && !scope && !discount  && !endedTime && !startedTime ){
       throw new BadRequestException(`Bạn cần có ít nhất 1 giá trị để thực hiện tìm kiếm`);
     }
@@ -179,7 +179,7 @@ export class CouponsService {
     if (_id) query._id = _id;
     if (scope) query.scope = scope;
     if (discount) query.discount = discount;
-    if (userCreateId) query.userCreateId = userCreateId
+    if(belongTo) query.userCreateId = belongTo
 
     if(startedTime) {
       query.createdAt =  {

@@ -184,15 +184,12 @@ export class RestaurantsService {
     }else{
       throw new BadRequestException("Id không hợp lệ")
     }
-    
   }
 
-  
-
-  remove(_id: string) {
+  async remove(_id: string) {
     if(mongoose.isValidObjectId(_id)){
-      // delete
-      return this.RestaurantModel.deleteOne({_id})
+      await this.UserModel.updateOne({restaurantId : _id}, {restaurantId: null})
+      return await this.RestaurantModel.deleteOne({_id})
     }else{
       throw new BadRequestException("Id không hợp lệ")
     }
