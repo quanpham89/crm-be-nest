@@ -46,7 +46,7 @@ export class RestaurantsService {
   }
 
    async getAllRestaurant () {
-    const restaurant = await this.RestaurantModel.find()
+    const restaurant = await this.RestaurantModel.find({isShow: true})
     .populate({
       path: 'menuId', 
       populate: {
