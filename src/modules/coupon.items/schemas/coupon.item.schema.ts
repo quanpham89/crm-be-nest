@@ -1,3 +1,4 @@
+import { Customer } from '@/modules/customer/schemas/customers.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 export type CouponItemDocument = HydratedDocument<CouponItem>;
@@ -20,7 +21,7 @@ export class CouponItem {
     @Prop({default: null})
     couponId: string;
 
-    @Prop({default: null})
+    @Prop({ ref: "Customer", default: null})
     customer: string;
 
     @Prop({default: null})

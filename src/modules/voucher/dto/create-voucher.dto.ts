@@ -14,8 +14,8 @@ export class CreateVoucherDto {
     @IsNotEmpty({message: "Type không được để trống "})
     type: string;
 
-    @IsNotEmpty({message: "for không được để trống "})
-    forAge: string;
+    @IsNotEmpty({message: "scope không được để trống "})
+    scope: string;
 
     @IsNotEmpty({message: "percentage không được để trống "})
     percentage: number

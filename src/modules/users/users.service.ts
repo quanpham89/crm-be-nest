@@ -12,11 +12,31 @@ import { changePasswordDto, CodeAuthDto, CreateAuthDto } from '@/auth/dto/create
 import {v4 as uuidv4} from "uuid"
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
+import { CouponItem } from '../coupon.items/schemas/coupon.item.schema';
+import { Coupon } from '../coupons/schemas/coupon.schema';
+import { MenuItem } from '../menu.items/schemas/menu.item.schema';
+import { Menu } from '../menus/schemas/menu.schema';
+import { OrderDetail } from '../order.detail/schemas/order.detail.schema';
+import { Order } from '../orders/schemas/order.schema';
+import { Restaurant } from '../restaurants/schemas/restaurant.schema';
+import { VoucherItem } from '../voucher.items/schemas/voucher.item.schema';
+import { Voucher } from '../voucher/schemas/voucher.schema';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(CouponItem.name) private CouponItemModel: Model<CouponItem>,
+    @InjectModel(Coupon.name) private CouponModel: Model<Coupon>,
     @InjectModel(Customer.name) private customerModel: Model<Customer>,
+    @InjectModel(MenuItem.name) private MenuItemModel: Model<MenuItem>,
+    @InjectModel(Menu.name) private MenuModel: Model<Menu>,
+    @InjectModel(OrderDetail.name) private OrderDetailModel: Model<OrderDetail>,
+    @InjectModel(Order.name) private OrderModel: Model<Order>,
+    @InjectModel(Restaurant.name) private RestaurantModel: Model<Restaurant>,
+    @InjectModel(VoucherItem.name) private VoucherItemModel: Model<VoucherItem>,
+    @InjectModel(Voucher.name) private VoucherModel: Model<Voucher>,
+
+
 
     private readonly mailerService : MailerService
   ){}
@@ -126,6 +146,23 @@ export class UsersService {
   async remove(_id: string) {
     // check id
     if(mongoose.isValidObjectId(_id)){
+      await this.CouponModel.deleteOne({userCreateId: _id})
+      await this.VoucherModel.deleteOne({userCreateId: _id})
+      const customer = await this.customerModel.findOne({userId: _id})
+      if(customer?._id){
+        await this.CouponItemModel.deleteOne({customer: _id},)
+        await this.VoucherItemModel.deleteOne({customer: _id})
+      }
+      await this.customerModel.deleteOne({userId: _id})
+      await this.MenuModel.deleteOne({userCreateId: _id})
+      await this.RestaurantModel.deleteOne({userId: _id})
+      const menus = await this.MenuModel.find({menuItemId: _id})
+      for (const item of menus) {
+        await this.MenuItemModel.deleteMany({ menuId: item._id });
+    }
+      await this.MenuModel.deleteMany({userCreateId: _id})
+
+      
       // delete
       return this.userModel.deleteOne({_id})
     }else{

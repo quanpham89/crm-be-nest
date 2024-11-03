@@ -29,7 +29,7 @@ export class CouponsService {
 
   async create(createCouponDto: CreateCouponDto) {
 
-    const { nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image } = createCouponDto;
+    const { nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image, type } = createCouponDto;
     const user = await this.UserModal.findOne({_id: userCreateId})
 
     const isExist = await this.isNameExist(nameCoupon);
@@ -41,15 +41,17 @@ export class CouponsService {
     }
 
     const coupons = await this.CouponModal.create({
-      nameCoupon, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image, restaurantId: user.role === "ADMINS" || user.role === "ADMIN" ? undefined : user.restaurantId
+      nameCoupon, type, amount, description, scope , status, endedDate, startedDate, userCreateId, createdBy, discount, image, restaurantId: user.role === "ADMINS" || user.role === "ADMIN" ? undefined : user.restaurantId, remain : amount
     });
 
-    // update listCouponId for restaurant
-    const listCouponId = await this.RestaurantModal.findOne({_id: user.restaurantId})
-    await this.RestaurantModal.updateOne(
-      {_id: user.restaurantId},
-      {couponId : [...listCouponId.couponId, coupons._id]}
-    )
+    if(user.restaurantId  && user.role === "BUSINESSMAN"){
+      // update listCouponId for restaurant
+      const listCouponId = await this.RestaurantModal.findOne({_id: user.restaurantId})
+      await this.RestaurantModal.updateOne(
+        {_id: user.restaurantId},
+        {couponId : [...listCouponId.couponId, coupons._id]}
+      )
+    }
 
     let couponItemIdArray = [];
 
@@ -112,7 +114,7 @@ export class CouponsService {
     const coupon = await this.CouponModal.find({restaurantId: _id})
     .populate({
       path: 'couponItemId',
-      select: '-updatedAt -createdAt -__v' 
+      select: '-updatedAt -createdAt -__v',
     })
     .select('-updatedAt -createdAt -__v')
     .exec();
@@ -153,7 +155,16 @@ export class CouponsService {
     const coupon = await this.CouponModal.find({_id: _id})
     .populate({
       path: 'couponItemId',
-      select: '-updatedAt -createdAt -__v' 
+      select: '-updatedAt -createdAt -__v',
+      populate: ({
+        path:"customer",
+        select: "userId",
+        populate :({
+          path: "userId",
+          select: "name"
+        })
+      } )
+
     })
     .select('-updatedAt -createdAt -__v')
     .exec();

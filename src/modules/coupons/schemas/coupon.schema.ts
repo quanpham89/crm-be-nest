@@ -11,6 +11,9 @@ export class Coupon {
     nameCoupon: string;
 
     @Prop()
+    type: string;
+
+    @Prop()
     description: string;
 
     @Prop()

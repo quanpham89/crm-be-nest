@@ -1,5 +1,6 @@
 // import { Menu } from '@/modules/menus/schemas/menu.schema';
 
+import { Customer } from '@/modules/customer/schemas/customers.schema';
 import { Voucher } from '@/modules/voucher/schemas/voucher.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
@@ -30,7 +31,7 @@ export class VoucherItem {
     @Prop({default: null})
     voucherId: string;
 
-    @Prop({default: null})
+    @Prop({ ref: "Customer", default: null})
     customer: string;
 
     @Prop({default: null})

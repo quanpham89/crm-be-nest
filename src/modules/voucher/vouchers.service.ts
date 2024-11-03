@@ -30,7 +30,7 @@ export class VouchersService {
   }
 
   async create(createVoucherDto: CreateVoucherDto) {
-    const { nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage, image} = createVoucherDto;
+    const { nameVoucher, amount, description, type, status, endedDate, startedDate, userCreateId, createdBy, percentage, image, scope} = createVoucherDto;
     const user = (await this.UserModal.findOne({_id: userCreateId}))
 
     const isExist = await this.isNameExist(nameVoucher);
@@ -43,15 +43,17 @@ export class VouchersService {
     }
 
     const vouchers = await this.VoucherModal.create({
-        nameVoucher, amount, description, type, forAge, status, endedDate, startedDate, userCreateId, createdBy, percentage, image, restaurantId: user.role === "ADMINS" || user.role === "ADMIN" ? undefined : user.restaurantId
+        nameVoucher, scope, amount, description, type, status, endedDate, startedDate, userCreateId, createdBy, percentage, image, restaurantId: user.role === "ADMINS" || user.role === "ADMIN" ? undefined : user.restaurantId, remain: amount
     });
 
-    // update listvoucherId for restaurant
-    const listVoucherId = await this.RestaurantModal.findOne({_id: user.restaurantId})
-    await this.RestaurantModal.updateOne(
-      {_id: user.restaurantId},
-      {voucherId : [...listVoucherId.voucherId, vouchers._id]}
-    )
+    if(user.restaurantId && user.role === "BUSINESSMAN"){
+      // update listvoucherId for restaurant
+      const listVoucherId = await this.RestaurantModal.findOne({_id: user.restaurantId})
+      await this.RestaurantModal.updateOne(
+        {_id: user.restaurantId},
+        {voucherId : [...listVoucherId.voucherId, vouchers._id]}
+      )
+    }
 
     let voucherItemIdArray = [];
     for (let i = 0; i < +amount; i++) {
@@ -116,14 +118,22 @@ export class VouchersService {
     return formattedVoucher
   }
 
-  async getItemvoucherForVoucher(_id: string) {
+  async getItemVoucherForVoucher(_id: string) {
     if(!_id ){
       throw new BadRequestException(`Bạn cần có _id để thực hiện lấy dữ liệu`);
     }
     const voucher = await this.VoucherModal.find({_id: _id})
     .populate({
       path: 'voucherItemId',
-      select: '-updatedAt -createdAt -__v' 
+      select: '-updatedAt -createdAt -__v',
+      populate: ({
+        path:"customer",
+        select: "userId",
+        populate :({
+          path: "userId",
+          select: "name"
+        })
+      } )
     })
     .select('-updatedAt -createdAt -__v')
     .exec();

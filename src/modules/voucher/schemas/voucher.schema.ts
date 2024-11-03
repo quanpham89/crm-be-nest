@@ -35,14 +35,12 @@ export class Voucher {
     @Prop()
     percentage: number;
 
-    @Prop({default: "child"})
-    forAge: string;
+    @Prop({default: "ALL"})
+    scope: string;
 
     @Prop({default: "HIDDEN"})
     status: string;
 
-    @Prop({default: "ALL"})
-    scope: string;
 
     @Prop({default: "ADMIN"})
     createdBy: string

@@ -40,8 +40,8 @@ export class VouchersController {
   }
 
   @Get('/get-voucher-by-id')
-  getItemvoucherForVoucher(@Query("_id") _id: string) {
-    return this.vouchersService.getItemvoucherForVoucher(_id);
+  getItemVoucherForVoucher(@Query("_id") _id: string) {
+    return this.vouchersService.getItemVoucherForVoucher(_id);
   }
 
   @Get('/get-voucher-create-by-admin')

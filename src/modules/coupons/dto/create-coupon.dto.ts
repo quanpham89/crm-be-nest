@@ -10,8 +10,8 @@ export class CreateCouponDto {
     @IsNotEmpty({message: "Description không được để trống "})
     description: string;
 
-    // @IsNotEmpty({message: "Type không được để trống "})
-    // type: string;
+    @IsNotEmpty({message: "Type không được để trống "})
+    type: string;
 
     @IsNotEmpty({message: "scope không được để trống "})
     scope: string;
