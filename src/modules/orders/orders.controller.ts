@@ -24,16 +24,19 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
+
+
+
+  @Get('/get-all-figure-order')
+  @Public()
+  getAllFigureOrder() {
+    return this.ordersService.getAllFigureOrder();
   }
 
 
-
-  @Patch("/close-order")
+  @Patch("/cancel-order")
   handleCloseOrder(@Query("_id") _id: string) {
-    return this.ordersService.handleCloseOrder(_id);
+    return this.ordersService.handleCancleOrder(_id);
   }
 
   @Patch("/receive-order")

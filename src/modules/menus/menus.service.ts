@@ -132,7 +132,10 @@ export class MenusService {
     const menus = await this.MenuModel.find({ restaurantId: _id, status: "PUBLIC"})
     .populate({
       path: 'menuItemId',
-      select : "-updatedAt -createdAt -__v"
+      select : "-updatedAt -createdAt -__v",
+      match: {
+        status: "PUBLIC"
+      }
 
     })
     .select("-updatedAt -createdAt -__v").exec();

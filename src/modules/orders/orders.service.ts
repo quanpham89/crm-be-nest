@@ -167,10 +167,14 @@ export class OrdersService {
     return response
   }
 
-  async handleCloseOrder (_id: string){
+  async handleCancleOrder (_id: string){
     if(_id){
+      await this.OrderDetailModel.updateMany({order: _id},{
+        status: "CANCEL"
+
+      })
       return await this.OrderModel.updateOne({_id: _id}, {
-        status: "CANCLE"
+        status: "CANCEL"
       })
     }else{
       throw new BadRequestException("Không xác định được _id order.")
@@ -188,19 +192,46 @@ export class OrdersService {
       throw new BadRequestException("Không xác định được _id order.")
     }
   }
+ async getAllFigureOrder(){
+
+
+   const order = await this.OrderModel.find({})
+   const totalOrder = order.length;
+   const pending = (await this.OrderModel.find({status: "PENDING"})).length
+   const accept =  (await this.OrderModel.find({ status: "ACCEPT" })).length
+   const prepare = (await this.OrderModel.find({status: "PREPARE"})).length
+   const sending = (await this.OrderModel.find({status: "SENDING"})).length
+   const receive = (await this.OrderModel.find({status: "RECEIVE"})).length
+   const cancel = (await this.OrderModel.find({status: "CANCEL"})).length
+   const reject = (await this.OrderModel.find({status: "REJECT"})).length
+   
+   const orderStatus = [
+    { status: "pending", count: pending },
+    { status: "accept", count: accept },
+    { status: "prepare", count: prepare },
+    { status: "sending", count: sending },
+    { status: "receive", count: receive },
+    { status: "cancel", count: cancel },
+    { status: "reject", count: reject }
+  ];
+  return orderStatus
+
+ }
+
+
   findAll() {
     return `This action returns all orders`;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} order`;
+    return `This action returns a121212 #${id} order`;
   }
 
   update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+    return `This action updates a2 #${id} order`;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} order`;
+    return `This action removes a3 #${id} order`;
   }
 }

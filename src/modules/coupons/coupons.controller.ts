@@ -29,6 +29,12 @@ export class CouponsController {
     return this.couponsService.getAllCoupon();
   }
 
+  @Get('/get-all-figure-coupon')
+  // @Public()
+  getAllFigureCoupon() {
+    return this.couponsService.getAllFigureCoupon();
+  }
+
   @Get('/get-all-coupons-belong-to-restaurant')
   @Public()
   getCouponBelongToRestaurant(@Query("_id") _id: string,) {

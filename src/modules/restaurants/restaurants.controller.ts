@@ -31,6 +31,12 @@ export class RestaurantsController {
     return this.restaurantsService.getAllRestaurant();
   }
 
+  @Get('/get-all-figure-restaurant')
+  @Public()
+  getAllFigureOrder() {
+    return this.restaurantsService.getAllFigureRestaurant();
+  }
+
   @Get('/get-restaurant-by-id')
   @Roles('ADMINS', 'ADMIN', "BUSINESSMAN")
   findOne(@Query("_id") _id: string) {

@@ -68,6 +68,22 @@ export class RestaurantsService {
     return formatData;
   }
 
+  async getAllFigureRestaurant(){
+    const total = (await this.RestaurantModel.find({})).length
+    const food = (await this.RestaurantModel.find({productType: "FOOD"})).length
+    const drink = (await this.RestaurantModel.find({productType: "DRINK"})).length
+    const fastfood = (await this.RestaurantModel.find({productType: "FASTFOOD"})).length
+    const all = total - food -drink - fastfood
+    const restaurant = [
+      { label: "food", count: food },
+      { label: "drink", count: drink },
+      { label: "fastfood", count: fastfood },
+      { label: "all", count: all },
+    ]; 
+    return restaurant
+  }
+
+
   async getRestaurantsById (_id: string) {
     const restaurants = await this.RestaurantModel.find({userId: _id})
     .populate({

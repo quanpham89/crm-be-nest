@@ -11,6 +11,7 @@ import aqp from 'api-query-params';
 import { User } from '../users/schemas/user.schema';
 import _ from "lodash"
 import { Restaurant } from '../restaurants/schemas/restaurant.schema';
+import { title } from 'process';
 
 @Injectable()
 export class VouchersService {
@@ -95,6 +96,61 @@ export class VouchersService {
     return formattedVoucher
   }
 
+  async getAllFigureVoucher () {
+    const voucher = await this.VoucherModal.find({})
+    .populate({
+      path: 'voucherItemId',
+      select: 'status customer orderUse' 
+    })
+    .select('status scope type voucherItemId amount remain')
+    .exec();
+
+    const totalVoucherItem = (await this.VoucherItemsModal.find({})).length
+    const usedVoucherItem = (await this.VoucherItemsModal.find({status: "USED"})).length
+    const unusedVoucherItem = totalVoucherItem - usedVoucherItem
+    const column4 = {
+      title: "Trạng thái:",
+      totalVoucherItem: totalVoucherItem,
+      usedVoucherItem: usedVoucherItem,
+      unusedVoucherItem: unusedVoucherItem
+    }
+
+    let totalVoucher = voucher.length
+    const publicVoucher = (await this.VoucherModal.find({status: "PUBLIC"})).length
+    const hiddenVoucher = totalVoucher - publicVoucher
+    const column1 = {
+      title: "Voucher(lô):",
+      publicVoucher: publicVoucher,
+      hiddenVoucher: hiddenVoucher,
+      totalVoucher: totalVoucher
+    }
+
+    const typeVoucherGift= (await this.VoucherModal.find({type: "GIFT"})).length
+    const typeVoucherEvent  = totalVoucher - typeVoucherGift
+    const column2 = {
+      title: "Phân loại(lô):",
+      typeVoucherGift: typeVoucherGift,
+      typeVoucherEvent: typeVoucherEvent
+    }
+
+    const scopeVoucherAll = (await this.VoucherModal.find({scope: "ALL"})).length
+    const scopeVoucherFood = (await this.VoucherModal.find({scope: "FOOD"})).length
+    const scopeVoucherDrink =  totalVoucher - scopeVoucherAll - scopeVoucherFood
+    const column3 = {
+      title: "Phạm vi(lô):",
+      scopeVoucherAll: scopeVoucherAll,
+      scopeVoucherFood: scopeVoucherFood,
+      scopeVoucherDrink: scopeVoucherDrink
+    }
+    
+    return [
+      column1,
+      column2,
+      column3, 
+      column4
+    ]
+  }
+
   async getVoucherBelongRestaurant (_id: string) {
     if(!_id ){
       throw new BadRequestException(`Bạn cần có _id để thực hiện lấy dữ liệu`);
@@ -170,16 +226,19 @@ export class VouchersService {
   }
 
   async searchVoucher (searchVoucher : any) {
-    const {nameVoucher, _id, type, forAge, endedTime, startedTime, userCreateId, belongTo} = searchVoucher
-    if(!nameVoucher  && !_id  && !type && !forAge  && !endedTime && !startedTime ){
+    const {nameVoucher, _id, type, scope, endedTime, startedTime, userCreateId, belongTo, percentage} = searchVoucher
+    console.log(searchVoucher)
+    if(!nameVoucher  && !_id &&!percentage  && !type && !scope  && !endedTime && !startedTime ){
       throw new BadRequestException(`Bạn cần có ít nhất 1 giá trị để thực hiện tìm kiếm`);
     }
     const query: any = {};
     if (nameVoucher) query.nameVoucher = nameVoucher;
     if (_id) query._id = _id;
     if (type) query.type = type;
-    if (forAge) query.forAge = forAge;
+    if (scope) query.scope = scope;
     if(belongTo) query.userCreateId = belongTo
+    if (percentage) query.percentage = percentage;
+
     if(startedTime) {
       query.createdAt =  {
         $gte: new Date(startedTime),

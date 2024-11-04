@@ -93,7 +93,40 @@ export class UsersService {
     return {results, totalItems, totalPages};
   }
 
-  async findAllIdUser(){
+  async getFigureDataUser () {
+    const user = await this.userModel.find({})
+    const totalUser = user.length
+    let businessman = []
+    let customer = []
+    let customerUnActive = []
+    let businessmanUnActive = []
+    user.forEach((item)=>{
+      if(item.role === "BUSINESSMAN" && item.isActive){
+        businessman.push(item)
+      }
+      if(item.role === "BUSINESSMAN" && !item.isActive){
+        businessmanUnActive.push(item)
+      }
+      if(item.role === "CUSTOMER" && item.isActive){
+        customer.push(item)
+      }
+      if(item.role === "CUSTOMER" && !item.isActive){
+        customerUnActive.push(item)
+      }
+    })
+
+    let other =  Number(totalUser - businessman.length - businessmanUnActive.length - customer.length - customerUnActive.length)
+    const firgureUser = [
+      { label: "Người kinh doanh được kích hoạt", count:  businessman.length },
+      { label: "Tài khoản kinh doanh chưa kích hoạt", count: businessmanUnActive.length },
+      { label: "Tài khoản khách được kích hoạt", count: customer.length },
+      { label: "Tài khoản khách chưa kích hoạt", count: customerUnActive.length },
+      { label: "Khác", count: other },
+    ]; 
+    return firgureUser
+  }
+
+  async findAllIdUserBusinessman(){
     const user = await this.userModel.find({
       role : "BUSINESSMAN",
       isActive: true,
@@ -196,7 +229,7 @@ export class UsersService {
 
     // send email
     this.mailerService.sendMail({
-      to: 'admin@gmail.com', // list of receivers
+      to: email, // list of receivers
       subject: "Activate your account", // Subject line
       text: 'welcome', // plaintext body
       template: "Register",

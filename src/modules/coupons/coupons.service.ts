@@ -148,6 +148,62 @@ export class CouponsService {
     return formattedCoupon
   }
 
+  async getAllFigureCoupon () {
+    const coupon = await this.CouponModal.find({})
+    .populate({
+      path: 'couponItemId',
+      select: 'status customer orderUse' 
+    })
+    .select('status scope type couponItemId amount remain')
+    .exec();
+
+    const totalCouponItem = (await this.CouponItemsModal.find({})).length
+    const usedCouponItem = (await this.CouponItemsModal.find({status: "USED"})).length
+    const unusedCouponItem = totalCouponItem - usedCouponItem
+    const column4 = {
+      title: "Trạng thái:",
+      totalCouponItem: totalCouponItem,
+      usedCouponItem: usedCouponItem,
+      unusedCouponItem: unusedCouponItem
+    }
+
+    let totalCoupon = coupon.length
+    const publicCoupon = (await this.CouponModal.find({status: "PUBLIC"})).length
+    const hiddenCoupon = totalCoupon - publicCoupon
+    const column1 = {
+      title: "Coupon(lô):",
+      publicCoupon: publicCoupon,
+      hiddenCoupon: hiddenCoupon,
+      totalCoupon: totalCoupon
+    }
+
+    const typeCouponGift= (await this.CouponModal.find({type: "GIFT"})).length
+    const typeCouponEvent  = totalCoupon - typeCouponGift
+    const column2 = {
+      title: "Phân loại(lô):",
+      typeCouponGift: typeCouponGift,
+      typeCouponEvent: typeCouponEvent
+    }
+
+    const scopeCouponAll = (await this.CouponModal.find({scope: "ALL"})).length
+    const scopeCouponFood = (await this.CouponModal.find({scope: "FOOD"})).length
+    const scopeCouponDrink =  totalCoupon - scopeCouponAll - scopeCouponFood
+    const column3 = {
+      title: "Phạm vi(lô):",
+      scopeCouponAll: scopeCouponAll,
+      scopeCouponFood: scopeCouponFood,
+      scopeCouponDrink: scopeCouponDrink
+    }
+    
+    return [
+      column1,
+      column2,
+      column3, 
+      column4
+    ]
+  }
+
+
   async getItemCouponForCoupon(_id: string) {
     if(!_id ){
       throw new BadRequestException(`Bạn cần có id để thực hiện lấy dữ liệu`);
@@ -181,8 +237,8 @@ export class CouponsService {
   }
 
   async searchCoupon (searchCoupon : any) {
-    const {nameCoupon, _id, scope, discount, endedTime, startedTime, belongTo} = searchCoupon
-    if(!nameCoupon  && !_id  && !scope && !discount  && !endedTime && !startedTime ){
+    const {nameCoupon, _id, scope, discount, endedTime, startedTime, belongTo, type} = searchCoupon
+    if(!nameCoupon  && !_id && !type && !scope && !discount  && !endedTime && !startedTime ){
       throw new BadRequestException(`Bạn cần có ít nhất 1 giá trị để thực hiện tìm kiếm`);
     }
     const query: any = {};
@@ -191,6 +247,8 @@ export class CouponsService {
     if (scope) query.scope = scope;
     if (discount) query.discount = discount;
     if(belongTo) query.userCreateId = belongTo
+    if (type) query.type = type;
+
 
     if(startedTime) {
       query.createdAt =  {

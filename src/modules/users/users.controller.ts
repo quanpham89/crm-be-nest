@@ -26,10 +26,18 @@ export class UsersController {
     return this.usersService.findAll(query, +current, +pageSize);
   }
 
+  @Get("/get-all-figure-users")
+  @Roles('ADMINS', 'ADMIN')
+  getFigureDataUser() {
+    return this.usersService.getFigureDataUser();
+  }
+
+
+
   @Get("/get-all-users")
   @Roles('ADMINS', 'ADMIN')
-  findAllIdUser() {
-    return this.usersService.findAllIdUser();
+  findAllIdUserBusinessman() {
+    return this.usersService.findAllIdUserBusinessman();
   }
 
   @Get("/get-user-by-id")

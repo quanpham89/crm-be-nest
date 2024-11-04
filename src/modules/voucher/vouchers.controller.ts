@@ -33,6 +33,12 @@ export class VouchersController {
     return this.vouchersService.getAllVoucher();
   }
 
+  @Get('/get-all-figure-voucher')
+  @Public()
+  getAllFigureVoucher() {
+    return this.vouchersService.getAllFigureVoucher();
+  }
+
   @Get('/get-all-vouchers-belong-to-restaurant')
   @Public()
   getVoucherBelongRestaurant( @Query("_id") _id:string,) {
