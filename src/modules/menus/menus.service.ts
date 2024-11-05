@@ -174,8 +174,9 @@ export class MenusService {
     }
    }
 
-  remove(_id: string) {
+  async remove(_id: string) {
     if (mongoose.isValidObjectId(_id)) {
+      await this.MenuItemModel.deleteMany({ menuId: _id } )
       return this.MenuModel.deleteOne({ _id })
     } else {
       throw new BadRequestException("Id không hợp lệ")

@@ -5,7 +5,7 @@ import { UpdateOrderDetailDto } from './dto/update-order.detail.dto';
 import { Roles } from '@/decorator/customize';
 
 @Controller('order-detail')
-@Roles('ADMIN',"BUSINESSMAN")
+@Roles('ADMIN',"ADMINS","BUSINESSMAN")
 export class OrderDetailController {
   constructor(private readonly orderDetailService: OrderDetailService) { }
 
@@ -22,6 +22,11 @@ export class OrderDetailController {
     @Query("pageSize") pageSize:string,
   ) {
     return this.orderDetailService.getDataOrderDetailByRestaurantId(_id, query, +current, +pageSize);
+  }
+
+  @Get('/get-all-figure-order-detail-by-id')
+  getAllFigureOrder(@Query("_id") _id:string) {
+    return this.orderDetailService.getAllFigureOrder(_id);
   }
 
   @Get(':id')

@@ -14,6 +14,7 @@ import dayjs from 'dayjs';
 import isBetween from "dayjs/plugin/isBetween";
 import { CouponItem } from '../coupon.items/schemas/coupon.item.schema';
 import { VoucherItem } from '../voucher.items/schemas/voucher.item.schema';
+import { MenuItem } from '../menu.items/schemas/menu.item.schema';
 
 @Injectable()
 export class OrdersService {
@@ -26,6 +27,8 @@ export class OrdersService {
     @InjectModel(Coupon.name) private CouponModel: Model<Customer>,
     @InjectModel(CouponItem.name) private CouponItemModel: Model<CouponItem>,
     @InjectModel(VoucherItem.name) private VoucherItemModel: Model<VoucherItem>,
+    @InjectModel(MenuItem.name) private MenuItemModel: Model<MenuItem>,
+
 
   ) { }
   async create(createOrderDto: CreateOrderDto) {
@@ -123,6 +126,14 @@ export class OrdersService {
           status: "PENDING"
 
         })
+        if (cart[i]?.amount && cart[i]?.menuItemId) {
+          console.log(">>>>>>>>>>>",12122)
+          await this.MenuItemModel.findOneAndUpdate(
+              { _id: cart[i]?.menuItemId },
+              { $inc: { remain: -cart[i]?.amount } },
+              { new: true }
+          );
+      }
         listOrderDetailId.push(orderDetailId._id)
       }
       await this.OrderModel.updateOne({ _id: order._id }, { orderDetail: listOrderDetailId })
@@ -193,8 +204,6 @@ export class OrdersService {
     }
   }
  async getAllFigureOrder(){
-
-
    const order = await this.OrderModel.find({})
    const totalOrder = order.length;
    const pending = (await this.OrderModel.find({status: "PENDING"})).length

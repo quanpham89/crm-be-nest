@@ -66,7 +66,6 @@ export class MenusController {
 
 
   @Delete('/remove-menu')
-  @Roles('ADMINS')
   remove( @Query("_id") _id:string) {
     return this.menusService.remove(_id);
   }

@@ -36,7 +36,7 @@ export class CouponsService {
     if (isExist) {
         throw new BadRequestException(`Tên ${nameCoupon} đã tồn tại. Vui lòng sử dụng tên khác.`);
     }
-    if(user.restaurantId === null ){
+    if(user.restaurantId === null   && user.role === "BUSINESSMAN"){
       throw new BadRequestException("Bạn cần tạo nhà hàng trước khi tạo coupon.")
     }
 

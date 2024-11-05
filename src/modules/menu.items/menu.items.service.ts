@@ -43,7 +43,6 @@ export class MenuItemsService {
   }
 
   async create(data: any){
-    console.log(data)
     for(let i = 0;i<data.menuItem.length;i++){
       const response = await this.covertImageToUrl(data.menuItem[i].image, data.menuItem[i].nameItemMenu)
         const formatDataItemMenu = {

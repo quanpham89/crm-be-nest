@@ -46,7 +46,7 @@ export class User {
     @Prop()
     birthday: Date;
 
-    @Prop({ ref: 'Restaurant', default: undefined })
+    @Prop({ ref: 'Restaurant', default: null })
     restaurantId: string;
 
 }

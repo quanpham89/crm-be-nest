@@ -9,6 +9,7 @@ import { Coupon, CouponSchema } from '../coupons/schemas/coupon.schema';
 import { Voucher, VoucherSchema } from '../voucher/schemas/voucher.schema';
 import { CouponItem, CouponItemSchema } from '../coupon.items/schemas/coupon.item.schema';
 import { VoucherItem, VoucherItemSchema } from '../voucher.items/schemas/voucher.item.schema';
+import { MenuItem, MenuItemSchema } from '../menu.items/schemas/menu.item.schema';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -19,6 +20,8 @@ import { VoucherItem, VoucherItemSchema } from '../voucher.items/schemas/voucher
     { name: Coupon.name, schema: CouponSchema },
     { name: CouponItem.name, schema: CouponItemSchema },
     { name: VoucherItem.name, schema: VoucherItemSchema },
+    { name: MenuItem.name, schema: MenuItemSchema },
+
 
 
 

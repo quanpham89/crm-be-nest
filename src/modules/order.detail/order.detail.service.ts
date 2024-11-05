@@ -49,7 +49,6 @@ export class OrderDetailService {
   }
 
   async changeStatusOrderDetailItem (data: any){
-    console.log(data)
 
     const listStatusUnCheck = [
       "SENDING",
@@ -69,20 +68,20 @@ export class OrderDetailService {
 
     if(order ){
       if(!listStatusUnCheck.includes(order.status)){
-        let checkstatusReceive = order.orderDetail.every((item :any) => item.status === "ACCEPT")
-        if(checkstatusReceive){
+        let checkStatusReceive = order.orderDetail.every((item :any) => item.status === "ACCEPT")
+        if(checkStatusReceive){
           await this.OrderModel.updateOne({_id: data.orderId}, {status: "ACCEPT"} )
         }
-        let checkstatusSending = order.orderDetail.every((item :any) => item.status === "SENDING")
-        if(checkstatusSending){
+        let checkStatusSending = order.orderDetail.every((item :any) => item.status === "SENDING")
+        if(checkStatusSending){
           await this.OrderModel.updateOne({_id: data.orderId}, {status: "SENDING"} )
         }
-        let checkstatusPrepare = order.orderDetail.every((item :any) => item.status === "PREPARE")
-        if(checkstatusPrepare){
+        let checkStatusPrepare = order.orderDetail.every((item :any) => item.status === "PREPARE")
+        if(checkStatusPrepare){
           await this.OrderModel.updateOne({_id: data.orderId}, {status: "PREPARE"} )
         }
-        // let checkstatusReject = order.orderDetail.some((item :any) => item.status === "REJECT")
-        // if(checkstatusReject){
+        // let checkStatusReject = order.orderDetail.some((item :any) => item.status === "REJECT")
+        // if(checkStatusReject){
         //   await this.OrderModel.updateOne({_id: data.orderId}, {status: "REJECT"} )
         //   await this.OrderDetailModel.updateMany(
         //     { order: data.orderId }, 
@@ -94,6 +93,30 @@ export class OrderDetailService {
     }
 
 
+  }
+
+  async getAllFigureOrder(_id: string){
+
+    const order = await this.OrderDetailModel.find({})
+    const pending = (await this.OrderDetailModel.find({restaurant: _id, status: "PENDING"})).length
+    const accept =  (await this.OrderDetailModel.find({restaurant: _id,  status: "ACCEPT" })).length
+    const prepare = (await this.OrderDetailModel.find({restaurant: _id, status: "PREPARE"})).length
+    const sending = (await this.OrderDetailModel.find({restaurant: _id, status: "SENDING"})).length
+    const receive = (await this.OrderDetailModel.find({restaurant: _id, status: "RECEIVE"})).length
+    const cancel = (await this.OrderDetailModel.find({restaurant: _id, status: "CANCEL"})).length
+    const reject = (await this.OrderDetailModel.find({restaurant: _id, status: "REJECT"})).length
+    
+    const orderStatus = [
+     { status: "pending", count: pending },
+     { status: "accept", count: accept },
+     { status: "prepare", count: prepare },
+     { status: "sending", count: sending },
+     { status: "receive", count: receive },
+     { status: "cancel", count: cancel },
+     { status: "reject", count: reject }
+   ];
+   return orderStatus
+ 
   }
 
   findAll() {
