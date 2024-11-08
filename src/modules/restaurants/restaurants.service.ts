@@ -49,6 +49,7 @@ export class RestaurantsService {
     const restaurant = await this.RestaurantModel.find({isShow: true})
     .populate({
       path: 'menuId', 
+      match: {status: "PUBLIC"},
       populate: {
         path: 'menuItemId', 
         select: 'nameItemMenu description sellingPrice fixedPrice image nameMenu menuId' 

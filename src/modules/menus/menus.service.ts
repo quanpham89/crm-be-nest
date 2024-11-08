@@ -33,6 +33,10 @@ export class MenusService {
         });
         return response
       }
+      return {
+        display_url: "https://cdn.dealtoday.vn/img/s630x420/f425c5ee26924b729fd75889a97c52ca.jpg?sign=yDXfvZBiRSPZILRXHRrm_A",
+        delete_url: ""
+      }
   }
 
   async create(createMenuDto: CreateMenuDto, listImage: any, dataMenuItem: any, numberItem: number) {
@@ -40,6 +44,7 @@ export class MenusService {
     const menus = await this.MenuModel.create({
       nameMenu, description, image, status, createdBy, userCreateId, restaurantId
     });
+    console.log(dataMenuItem)
 
     for(let i = 0;i<numberItem;i++){
       const response = await this.covertImageToUrl(listImage[i],  dataMenuItem[i].nameItemMenu)
@@ -57,7 +62,7 @@ export class MenusService {
         deleteUrl: dataMenuItem[i]?.deleteUrl,
         nameMenu,
         status: "PUBLIC",
-        quantity : "100000"
+        quantity : dataMenuItem[i].quantity
       }
 
       const menuItem = this.MenuItemsService.createItemMenu(formatDataItemMenu)

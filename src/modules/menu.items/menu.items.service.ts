@@ -29,6 +29,10 @@ export class MenuItemsService {
       });
       return response
     }
+    return {
+      display_url: "https://cdn.dealtoday.vn/img/s630x420/f425c5ee26924b729fd75889a97c52ca.jpg?sign=yDXfvZBiRSPZILRXHRrm_A",
+      delete_url: ""
+    }
   }
 
   async createItemMenu(createMenuItemDto: CreateMenuItemDto) {

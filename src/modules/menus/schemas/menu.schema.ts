@@ -30,7 +30,7 @@ export class Menu {
     @Prop({ type:[mongoose.Schema.Types.ObjectId], ref: MenuItem.name })
     menuItemId: mongoose.Schema.Types.ObjectId[];
 
-    @Prop({default: "https://t4.ftcdn.net/jpg/00/89/55/15/360_F_89551596_LdHAZRwz3i4EM4J0NHNHy2hEUYDfXc0j.jpg"})
+    @Prop({default: "https://cdn.dealtoday.vn/img/s630x420/f425c5ee26924b729fd75889a97c52ca.jpg?sign=yDXfvZBiRSPZILRXHRrm_A"})
     image: string;
 
 }

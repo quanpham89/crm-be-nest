@@ -58,7 +58,7 @@ export class UsersService {
     // hashPassword
     const hashPassword = await hashPaswwordHelper(password)
     const user = await this.userModel.create({
-      name, email, password: hashPassword, phone, address, image, accountType, role, sex, birthday, restaurantId, isActive
+      name, email, password: hashPassword, phone, image, accountType, role, sex, birthday, restaurantId, isActive, address
     })
 
 
@@ -204,7 +204,7 @@ export class UsersService {
   }
 
   async handleRegister(registerDto: CreateAuthDto) {
-    const { email, password, name, isActive, role, phone, sex, accountType} = registerDto
+    const { email, password, name, isActive, role, phone, sex, accountType, address} = registerDto
     const codeId = uuidv4()
     // check exist
     const isExist = await this.isEmailExist(email)
@@ -218,6 +218,7 @@ export class UsersService {
       name, email, password: hashPassword,
       isActive , codeId,
       role, phone, sex, accountType,
+      address,
       codeExpired: dayjs().add(5, "minutes")
     })
 

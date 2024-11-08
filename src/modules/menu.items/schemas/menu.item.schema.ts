@@ -20,7 +20,7 @@ export class MenuItem {
     @Prop()
     fixedPrice: number;
 
-    @Prop({default:"https://t3.ftcdn.net/jpg/04/84/88/76/360_F_484887682_Mx57wpHG4lKrPAG0y7Q8Q7bJ952J3TTO.jpg"} )
+    @Prop({default:"https://cdn.dealtoday.vn/img/s630x420/f425c5ee26924b729fd75889a97c52ca.jpg?sign=yDXfvZBiRSPZILRXHRrm_A"} )
     image: string;
 
     @Prop()

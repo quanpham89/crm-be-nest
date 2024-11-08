@@ -8,6 +8,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Customer } from '../customer/schemas/customers.schema';
 import aqp from 'api-query-params';
+import { Menu } from '../menus/schemas/menu.schema';
+import { Restaurant } from '../restaurants/schemas/restaurant.schema';
 
 @Injectable()
 export class OrderDetailService {
@@ -16,6 +18,10 @@ export class OrderDetailService {
     @InjectModel(Order.name) private OrderModel: Model<Order>,
     @InjectModel(OrderDetail.name) private OrderDetailModel: Model<OrderDetail>,
     @InjectModel(Customer.name) private CustomerModel: Model<Customer>,
+    @InjectModel(Menu.name) private MenuModel: Model<Menu>,
+    @InjectModel(Restaurant.name) private RestaurantModel: Model<Restaurant>,
+
+
     
 
   ) { }
@@ -116,7 +122,23 @@ export class OrderDetailService {
      { status: "reject", count: reject }
    ];
    return orderStatus
- 
+  }
+
+  async getAllFigureOrderBookingBelongToMenu (_id: string) {
+    const shop  = await this.RestaurantModel.findOne({_id: _id}).select("menuId") as any;
+    console.log(shop)
+
+    const data = await Promise.all(
+      shop.menuId.map(async (menuId: string) => {
+        const count =  ((await this.OrderDetailModel.find({ menu: menuId })).length) as number;
+        const menu = await this.MenuModel.findById({_id: menuId}) as any;
+        return {
+          nameMenu: menu ? menu.nameMenu : "",
+          count: count
+        };
+      })
+    );
+    return data
   }
 
   findAll() {

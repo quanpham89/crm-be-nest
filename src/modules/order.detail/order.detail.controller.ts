@@ -29,6 +29,11 @@ export class OrderDetailController {
     return this.orderDetailService.getAllFigureOrder(_id);
   }
 
+  @Get('/get-all-figure-order-detail-booking-belong-to-menu-by-id')
+  getAllFigureOrderBookingBelongToMenu(@Query("_id") _id:string) {
+    return this.orderDetailService.getAllFigureOrderBookingBelongToMenu(_id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.orderDetailService.findOne(+id);
