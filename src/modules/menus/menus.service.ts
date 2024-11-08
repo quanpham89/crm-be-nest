@@ -44,7 +44,6 @@ export class MenusService {
     const menus = await this.MenuModel.create({
       nameMenu, description, image, status, createdBy, userCreateId, restaurantId
     });
-    console.log(dataMenuItem)
 
     for(let i = 0;i<numberItem;i++){
       const response = await this.covertImageToUrl(listImage[i],  dataMenuItem[i].nameItemMenu)

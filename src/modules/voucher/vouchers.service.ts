@@ -227,7 +227,6 @@ export class VouchersService {
 
   async searchVoucher (searchVoucher : any) {
     const {nameVoucher, _id, type, scope, endedTime, startedTime, userCreateId, belongTo, percentage} = searchVoucher
-    console.log(searchVoucher)
     if(!nameVoucher  && !_id &&!percentage  && !type && !scope  && !endedTime && !startedTime ){
       throw new BadRequestException(`Bạn cần có ít nhất 1 giá trị để thực hiện tìm kiếm`);
     }

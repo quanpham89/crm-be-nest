@@ -127,7 +127,6 @@ export class OrdersService {
 
         })
         if (cart[i]?.amount && cart[i]?.menuItemId) {
-          console.log(">>>>>>>>>>>",12122)
           await this.MenuItemModel.findOneAndUpdate(
               { _id: cart[i]?.menuItemId },
               { $inc: { remain: -cart[i]?.amount } },
@@ -194,7 +193,6 @@ export class OrdersService {
 
   async handleReceiveOrder (_id: string){
     if(_id){
-      console.log(_id)
     await this.OrderModel.updateOne({_id: _id}, {
       status: "RECEIVE"
     })

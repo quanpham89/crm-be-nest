@@ -126,8 +126,6 @@ export class OrderDetailService {
 
   async getAllFigureOrderBookingBelongToMenu (_id: string) {
     const shop  = await this.RestaurantModel.findOne({_id: _id}).select("menuId") as any;
-    console.log(shop)
-
     const data = await Promise.all(
       shop.menuId.map(async (menuId: string) => {
         const count =  ((await this.OrderDetailModel.find({ menu: menuId })).length) as number;

@@ -41,7 +41,6 @@ export class OrdersController {
 
   @Patch("/receive-order")
   handleReceiveOrder( @Query("_id") _id: string) {
-    console.log("receive")
     return this.ordersService.handleReceiveOrder(_id);
   }
 
