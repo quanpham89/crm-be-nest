@@ -65,4 +65,10 @@ export class UsersController {
     return this.usersService.remove(_id);
   }
 
+  @Get("/get-test-data")
+  @Public()
+  getTestData() {
+    return this.usersService.getTestData();
+  }
+
 }

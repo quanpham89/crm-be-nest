@@ -378,11 +378,15 @@ export class UsersService {
     }
   }
 
-  
+
+  async getTestData(){
+    return "Data test"
+  }
 
 
 
 }
+
 
 
 
