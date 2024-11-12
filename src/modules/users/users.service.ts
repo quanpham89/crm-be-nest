@@ -294,7 +294,7 @@ export class UsersService {
     })
     // send email
     this.mailerService.sendMail({
-      to: 'phamdinhquan202@gmail.com', // list of receivers
+      to: email, // list of receivers
       subject: "Activate your account", // Subject line
       text: 'welcome', // plaintext body
       template: "Register",
