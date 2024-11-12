@@ -21,6 +21,8 @@ import { Order } from '../orders/schemas/order.schema';
 import { Restaurant } from '../restaurants/schemas/restaurant.schema';
 import { VoucherItem } from '../voucher.items/schemas/voucher.item.schema';
 import { Voucher } from '../voucher/schemas/voucher.schema';
+import path from 'path';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -227,18 +229,30 @@ export class UsersService {
     })
 
     //  response request
-
+    const templatePath = path.resolve(__dirname, 'src/mail/templates');
+    // send email
+    // this.mailerService.sendMail({
+    //   to: email, // list of receivers
+    //   subject: "Activate your account", // Subject line
+    //   text: 'welcome', // plaintext body
+    //   template: "Register",
+    //   context: {
+    //     name: user?.name ?? user.email,
+    //     activationCode: codeId,
+    //   },
+    // })
+    // .then(() => {})
+    // .catch(() => {});
+    const dataEmail = {
+      name: user?.name ?? user.email,
+      activationCode: codeId,
+    }
     // send email
     this.mailerService.sendMail({
       to: email, // list of receivers
       subject: "Activate your account", // Subject line
       text: 'welcome', // plaintext body
-      template: "Register",
-      context: {
-        name: user?.name ?? user.email,
-        activationCode: codeId,
-        
-      }
+      html: this.getHtmlBody(dataEmail)
     })
     .then(() => {})
     .catch(() => {});
@@ -292,23 +306,38 @@ export class UsersService {
     },{
       isActive: true
     })
+    const dataEmail = {
+      name: user?.name ?? user.email,
+      activationCode: codeId,
+    }
     // send email
     this.mailerService.sendMail({
       to: email, // list of receivers
       subject: "Activate your account", // Subject line
       text: 'welcome', // plaintext body
-      template: "Register",
-      context: {
-        name: user?.name ?? user.email,
-        activationCode: codeId,
-        
-      }
+      html: this.getHtmlBody(dataEmail)
     })
     .then(() => {})
     .catch(() => {});
     return {
       _id: user._id
     }
+    // this.mailerService.sendMail({
+    //   to: email, // list of receivers
+    //   subject: "Activate your account", // Subject line
+    //   text: 'welcome', // plaintext body
+    //   template: "Register",
+    //   context: {
+    //     name: user?.name ?? user.email,
+    //     activationCode: codeId,
+        
+    //   }
+    // })
+    // .then(() => {})
+    // .catch(() => {});
+    // return {
+    //   _id: user._id
+    // }
   }
 
   async resendPassword (email : string) {
@@ -326,19 +355,32 @@ export class UsersService {
       isActive: true
     })
     // send email
+    const dataEmail = {
+      name: user?.name ?? user.email,
+      activationCode: codeId,
+    }
+    // send email
     this.mailerService.sendMail({
-      to: 'phamdinhquan202@gmail.com', // list of receivers
-      subject: "Change your password", // Subject line
+      to: email, // list of receivers
+      subject: "Activate your account", // Subject line
       text: 'welcome', // plaintext body
-      template: "changePassword",
-      context: {
-        name: user?.name ?? user.email,
-        activationCode: codeId,
-        
-      }
+      html: this.getHtmlBody(dataEmail)
     })
     .then(() => {})
     .catch(() => {});
+    // this.mailerService.sendMail({
+    //   to: 'phamdinhquan202@gmail.com', // list of receivers
+    //   subject: "Change your password", // Subject line
+    //   text: 'welcome', // plaintext body
+    //   template: "changePassword",
+    //   context: {
+    //     name: user?.name ?? user.email,
+    //     activationCode: codeId,
+        
+    //   }
+    // })
+    // .then(() => {})
+    // .catch(() => {});
     return {
       _id: user._id,
       email: user.email
@@ -381,6 +423,33 @@ export class UsersService {
 
   async getTestData(){
     return "Data test"
+  }
+
+
+  getHtmlBody = (data : any) =>{
+    return `
+    <div
+    style="margin: 0; padding: 0; min-width: 100%; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; background-color: #FAFAFA; color: #222222;">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #0070f3; padding: 24px; color: #ffffff;">
+            <h1
+                style="font-size: 24px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 15px; text-align: center;">
+                Welcome to our service</h1>
+        </div>
+        <div style="padding: 24px; background-color: #ffffff;">
+            <p style="margin-top: 0; margin-bottom: 24px;">Hello ${data.name},</p>
+            <p style="margin-top: 0; margin-bottom: 24px;">Thank you for registering our service. To activate your
+                account, please use the following activation code:</p>
+            <h2
+                style="font-size: 20px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 15px; text-align: center;">
+                ${data.activationCode}</h2>
+            <p style="margin-top: 0; margin-bottom: 24px;">Please enter this code on the activation page within the next
+                5 minutes.</p>
+            <p style="margin-top: 0; margin-bottom: 24px;">If you did not register for this account, please
+                ignore this email.</p>
+        </div>
+    </div>
+</div>`
   }
 
 
