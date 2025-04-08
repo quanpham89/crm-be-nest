@@ -26,6 +26,7 @@ import { VoucherItemsModule } from './modules/voucher.items/voucher.items.module
 import { CouponsModule } from './modules/coupons/coupons.module';
 import { CouponItemsModule } from './modules/coupon.items/coupon.items.module';
 import { RolesGuard } from './auth/passport/roles.guard';
+import { ErrorMessageModule } from './modules/error.message/error.message.module';
 @Module({
   imports: [
     UsersModule, 
@@ -78,6 +79,7 @@ import { RolesGuard } from './auth/passport/roles.guard';
       
     }),
     AuthModule,
+    ErrorMessageModule,
     
   ],
   controllers: [AppController],
