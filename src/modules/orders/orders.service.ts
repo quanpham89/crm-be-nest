@@ -173,6 +173,16 @@ export class OrdersService {
       .populate({
         path: 'orderDetail',
         select: '-updatedAt -createdAt -__v',
+        populate: {
+          path: 'menuItem',
+          select: 'image ',
+          populate: {
+            path: 'feedback',
+            select: 'rate comment orderId',
+          },
+        },
+        
+
       }).exec()
     return response
   }

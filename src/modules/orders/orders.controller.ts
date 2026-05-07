@@ -14,7 +14,7 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto);
   }
 
-  @Get("/get-order-by-id")
+  @Get("/get-order-by-customer-id")
   findById(@Query("_id") _id:string  ) {
     return this.ordersService.findOrderById(_id);
   }

@@ -22,6 +22,7 @@ export class OrderDetailService {
     @InjectModel(Restaurant.name) private RestaurantModel: Model<Restaurant>,
 
 
+
     
 
   ) { }
@@ -48,6 +49,7 @@ export class OrderDetailService {
         select : "name"
       })
     })
+    .sort({ createdAt: -1 })
     .limit(pageSize)
     .skip(skip)
     .lean()

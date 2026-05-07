@@ -7,6 +7,7 @@ import { Order, OrderSchema } from '../orders/schemas/order.schema';
 import { Customer, CustomerSchema } from '../customer/schemas/customers.schema';
 import { Menu, MenuSchema } from '../menus/schemas/menu.schema';
 import { Restaurant, RestaurantSchema } from '../restaurants/schemas/restaurant.schema';
+import { MenuItem, MenuItemSchema } from '../menu.items/schemas/menu.item.schema';
 
 @Module({
   imports: [MongooseModule.forFeature([

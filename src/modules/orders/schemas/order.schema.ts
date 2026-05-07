@@ -15,7 +15,7 @@ export type OrderDocument = HydratedDocument<Order>;
 
 @Schema({ timestamps: true })
 export class Order {
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Customer.name })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Customer" })
     customer: mongoose.Schema.Types.ObjectId;
 
     @Prop({default: "PENDING"})

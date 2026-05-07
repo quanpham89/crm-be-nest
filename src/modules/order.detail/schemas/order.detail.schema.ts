@@ -18,32 +18,32 @@ export class OrderDetail {
     @Prop({ ref: "Order" })
     order: mongoose.Schema.Types.ObjectId;
 
-    @Prop({ ref: MenuItem.name })
-    menuItem: string;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "MenuItem" })
+    menuItem: mongoose.Schema.Types.ObjectId;
 
 
-    @Prop({ ref: MenuItem.name })
+    @Prop({ ref: "MenuItem" })   
     nameItemMenu: string
 
-    @Prop({ ref: Restaurant.name })
+    @Prop({ ref: "Restaurant" })
     restaurant: string;
 
-    @Prop({ ref: Restaurant.name })
+    @Prop({ ref: "Restaurant" })
     restaurantName: string;
 
     @Prop({default: NaN})
     sellingPrice: number;
 
-    @Prop({  ref: Menu.name })
+    @Prop({  ref: "Menu" })
     menu: string;
 
-    @Prop({  ref: Menu.name })
+    @Prop({  ref: "Menu" })
     nameMenu: string
 
     @Prop()
     amount: number
 
-    @Prop({ ref: Customer.name })
+    @Prop({ ref: "Customer" })
     customer: string;
 
     @Prop()
@@ -59,7 +59,7 @@ export class OrderDetail {
     status: string;
 
 
-    @Prop({  ref: Review.name, default: undefined })
+    @Prop({  ref: "Review", default: undefined })
     review: string[];
 
 }

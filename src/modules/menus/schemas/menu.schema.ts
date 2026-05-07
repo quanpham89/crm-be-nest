@@ -27,7 +27,7 @@ export class Menu {
     @Prop()
     createdBy:string;
 
-    @Prop({ type:[mongoose.Schema.Types.ObjectId], ref: MenuItem.name })
+    @Prop({ type:[mongoose.Schema.Types.ObjectId], ref: "MenuItem" })
     menuItemId: mongoose.Schema.Types.ObjectId[];
 
     @Prop({default: "https://cdn.dealtoday.vn/img/s630x420/f425c5ee26924b729fd75889a97c52ca.jpg?sign=yDXfvZBiRSPZILRXHRrm_A"})

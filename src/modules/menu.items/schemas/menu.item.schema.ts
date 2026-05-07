@@ -1,3 +1,4 @@
+import { Feedback } from '@/modules/feedbacks/schemas/feedback.schema';
 import { Menu } from '@/modules/menus/schemas/menu.schema';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
@@ -41,6 +42,9 @@ export class MenuItem {
     @Prop({default: 100})
     remain: number;
 
+
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: Feedback.name }] })
+    feedback: string[];
 
 }
 

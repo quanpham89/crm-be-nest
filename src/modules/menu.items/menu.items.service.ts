@@ -1,4 +1,3 @@
-import { LikeDocument } from './../likes/schemas/like.schema';
 import { Injectable } from '@nestjs/common';
 import { CreateMenuItemDto } from './dto/create-menu.item.dto';
 import { UpdateMenuItemDto } from './dto/update-menu.item.dto';
