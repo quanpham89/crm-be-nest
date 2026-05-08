@@ -58,13 +58,11 @@ export class AuthService {
 
   async login (user: any) {
     const payload = this.getAuthPayload(user)
-    console.log("payload", payload)
     const data = {
       user: this.getUserResponse(user),
       access_token: await this.signAccessToken(payload),
       refresh_token: await this.signRefreshToken(payload)
     }
-    console.log("data", data)
     return {
       ...data
     }
