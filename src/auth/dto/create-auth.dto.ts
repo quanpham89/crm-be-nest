@@ -57,3 +57,8 @@ export class changePasswordDto {
     @IsNotEmpty({message: "Email không được để trống"})
     email: string;
 }
+
+export class RefreshTokenDto {
+    @IsNotEmpty({message: "Refresh token không được để trống"})
+    refreshToken: string;
+}

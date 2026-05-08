@@ -1,17 +1,16 @@
-import { UsersModule } from '@/modules/users/users.module';
-import { IsEmail } from 'class-validator';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/modules/users/users.service';
 import { comparePaswwordHelper } from '@/helpers/ulti';
 import { JwtService } from '@nestjs/jwt';
 import { changePasswordDto, CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
-import { Restaurant } from '@/modules/restaurants/schemas/restaurant.schema';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
 
   constructor(
     private UsersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private configService: ConfigService
   ){}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -22,25 +21,77 @@ export class AuthService {
     return user
   }
 
-  async login (user: any) {
-     const payload = {sub: user._id, 
+  private getAuthPayload(user: any) {
+    return {sub: user._id, 
       username: user.email,  
       role: user.role,
       accountType: user.accountType,
       restaurantId: user.restaurantId, 
       isActive: user.isActive}
+  }
 
+  private getUserResponse(user: any) {
     return {
-      user:{
-        email: user.email,
-        _id: user._id,
-        name: user.name,
-        role: user.role,
-        accountType: user.accountType,
-        restaurantId: user.restaurantId,
-        isActive: user.isActive
-      },
-      access_token: await this.jwtService.signAsync(payload)
+      email: user.email,
+      _id: user._id,
+      name: user.name,
+      role: user.role,
+      accountType: user.accountType,
+      restaurantId: user.restaurantId,
+      isActive: user.isActive
+    }
+  }
+
+  private async signAccessToken(payload: any) {
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET_KEY'),
+      expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRED') || '15m',
+    })
+  }
+
+  private async signRefreshToken(payload: any) {
+    return this.jwtService.signAsync({...payload, tokenType: 'refresh'}, {
+      secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET') || this.configService.get<string>('JWT_SECRET_KEY'),
+      expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRED') || '7d',
+    })
+  }
+
+  async login (user: any) {
+    const payload = this.getAuthPayload(user)
+    console.log("payload", payload)
+    const data = {
+      user: this.getUserResponse(user),
+      access_token: await this.signAccessToken(payload),
+      refresh_token: await this.signRefreshToken(payload)
+    }
+    console.log("data", data)
+    return {
+      ...data
+    }
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const decoded = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET') || this.configService.get<string>('JWT_SECRET_KEY'),
+      })
+
+      if(decoded?.tokenType !== 'refresh'){
+        throw new UnauthorizedException("refresh token invalid")
+      }
+
+      const user = await this.UsersService.findByIdForAuth(decoded.sub)
+      if(!user || !user.isActive){
+        throw new UnauthorizedException("refresh token invalid")
+      }
+
+      const payload = this.getAuthPayload(user)
+      return {
+        access_token: await this.signAccessToken(payload),
+        refresh_token: await this.signRefreshToken(payload)
+      }
+    } catch {
+      throw new UnauthorizedException("refresh token invalid")
     }
   }
   

@@ -166,6 +166,10 @@ export class UsersService {
     return await this.userModel.findOne({email})
   }
 
+  async findByIdForAuth (_id : string) {
+    return await this.userModel.findById(_id)
+  }
+
   async updateUser( updateUserDto: UpdateUserDto) {
 
     return await this.userModel.updateOne({_id: updateUserDto._id}, {...updateUserDto})

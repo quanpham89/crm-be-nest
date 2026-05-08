@@ -6,7 +6,7 @@ import { Request } from '@nestjs/common';
 import { LocalAuthGuard } from '@/auth/passport/local.auth.gaurd';
 import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
 import { Public, ResponseMessage } from '@/decorator/customize';
-import { CreateAuthDto, CodeAuthDto, changePasswordDto } from './dto/create-auth.dto';
+import { CreateAuthDto, CodeAuthDto, changePasswordDto, RefreshTokenDto } from './dto/create-auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Controller('auth')
@@ -21,7 +21,23 @@ export class AuthController {
   @ResponseMessage("Fetch login")
   @Public()
   handleLogin(@Request() req){
+
+
     return this.authService.login(req.user)
+  }
+
+  @Post("refresh-token")
+  @ResponseMessage("Refresh token")
+  @Public()
+  refreshToken(@Body() body: RefreshTokenDto){
+    return this.authService.refreshToken(body.refreshToken)
+  }
+
+  @Get("logout")
+  @ResponseMessage("Logout")
+  @Public()
+  logout(){
+    return "ok"
   }
 
   @Get("profile")
