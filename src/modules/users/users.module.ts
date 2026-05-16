@@ -13,9 +13,15 @@ import { VoucherItem, VoucherItemSchema } from '../voucher.items/schemas/voucher
 import { Coupon, CouponSchema } from '../coupons/schemas/coupon.schema';
 import { CouponItem, CouponItemSchema } from '../coupon.items/schemas/coupon.item.schema';
 import { MenuItem, MenuItemSchema } from '../menu.items/schemas/menu.item.schema';
+import { QueueService } from '../queue/queue.service';
+import { QueueModule } from '../queue/queue.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([
+  imports: [
+    QueueModule,
+
+    
+    MongooseModule.forFeature([
     { name: User.name, schema: UserSchema },
     { name: Customer.name, schema: CustomerSchema },
     { name: Restaurant.name, schema: RestaurantSchema },
@@ -29,7 +35,7 @@ import { MenuItem, MenuItemSchema } from '../menu.items/schemas/menu.item.schema
     { name: CouponItem.name, schema: CouponItemSchema },
   ])],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, ],
   exports:[UsersService]
 })
 export class UsersModule { }

@@ -27,6 +27,14 @@ import { CouponsModule } from './modules/coupons/coupons.module';
 import { CouponItemsModule } from './modules/coupon.items/coupon.items.module';
 import { RolesGuard } from './auth/passport/roles.guard';
 import { ErrorMessageModule } from './modules/error.message/error.message.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import {  QueueModule } from './modules/queue/queue.module';
+import { BullModule } from '@nestjs/bullmq';
+import { bullConfig } from './config/bull.config';
+import { BullBoardModule } from '@bull-board/nestjs';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { ExpressAdapter } from '@bull-board/express';
+import { QUEUE_NAMES } from './modules/queue/queue.constants';
 @Module({
   imports: [
     UsersModule, 
@@ -43,6 +51,10 @@ import { ErrorMessageModule } from './modules/error.message/error.message.module
     CouponsModule,
     CouponItemsModule, 
     ConfigModule.forRoot({isGlobal: true}),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60000,
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -78,6 +90,9 @@ import { ErrorMessageModule } from './modules/error.message/error.message.module
       inject: [ConfigService],
       
     }),
+    BullModule.forRoot(bullConfig), 
+    QueueModule,
+
     AuthModule,
     ErrorMessageModule,
     
