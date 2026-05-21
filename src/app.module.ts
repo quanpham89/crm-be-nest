@@ -35,6 +35,7 @@ import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
 import { QUEUE_NAMES } from './modules/queue/queue.constants';
+import { ChatModule } from './modules/chat/chat.module';
 @Module({
   imports: [
     UsersModule, 
@@ -92,6 +93,7 @@ import { QUEUE_NAMES } from './modules/queue/queue.constants';
     }),
     BullModule.forRoot(bullConfig), 
     QueueModule,
+    ChatModule,
 
     AuthModule,
     ErrorMessageModule,
