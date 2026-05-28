@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { json, urlencoded } from 'express';
+import helmet from 'helmet';
+import compression from 'compression';
 import { ExpressAdapter } from '@bull-board/express/dist/ExpressAdapter';
 import { createBullBoard } from '@bull-board/api';
 import { QUEUE_NAMES } from './modules/queue/queue.constants';
@@ -48,6 +50,10 @@ async function bootstrap() {
       credentials: true
     }
     );
+    // security and compression
+    app.use(helmet());
+    app.use(compression());
+
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ extended: true, limit: '50mb' }));
     console.log(`Server is running on port ${port}`);

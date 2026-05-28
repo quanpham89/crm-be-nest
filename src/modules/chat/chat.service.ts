@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Connection, Model } from 'mongoose';
 import { Conversation } from './schemas/conversation.schema';
 import { Message } from './schemas/message.schema';
 import { Restaurant } from '@/modules/restaurants/schemas/restaurant.schema';
@@ -18,6 +18,7 @@ export class ChatService {
   private readonly logger = new Logger(ChatService.name);
 
   constructor(
+    @InjectConnection() private readonly connection: Connection,
     @InjectModel(Conversation.name) private ConversationModel: Model<Conversation>,
     @InjectModel(Message.name) private MessageModel: Model<Message>,
     @InjectModel(Restaurant.name) private RestaurantModel: Model<Restaurant>,
@@ -112,26 +113,70 @@ export class ChatService {
     const conversation: any = await this.ensureConversationAccess(user, dto.conversationId);
     const isCustomer = conversation.customer.toString() === user._id;
     const receiver = isCustomer ? conversation.businessman : conversation.customer;
+    const content = dto.content.trim();
+    const session = await this.connection.startSession();
+    let messageId: any;
 
-    const message = await this.MessageModel.create({
-      conversation: conversation._id,
-      sender: user._id,
-      receiver,
-      senderRole: isCustomer ? 'CUSTOMER' : 'BUSINESSMAN',
-      type: dto.type || 'TEXT',
-      content: dto.content.trim(),
-    });
+    try {
+      this.logger.log(
+        `send_message_transaction begin userId=${user._id} conversationId=${dto.conversationId}`,
+      );
+      session.startTransaction();
 
-    await this.ConversationModel.updateOne(
-      { _id: conversation._id },
-      {
-        lastMessage: dto.content.trim(),
-        lastMessageAt: new Date(),
-        $inc: isCustomer ? { unreadByBusinessman: 1 } : { unreadByCustomer: 1 },
-      },
-    );
+      const [message] = await this.MessageModel.create(
+        [
+          {
+            conversation: conversation._id,
+            sender: user._id,
+            receiver,
+            senderRole: isCustomer ? 'CUSTOMER' : 'BUSINESSMAN',
+            type: dto.type || 'TEXT',
+            content,
+          },
+        ],
+        { session },
+      );
+      messageId = message._id;
 
-    const savedMessage = await this.MessageModel.findById(message._id)
+      this.logger.log(
+        `send_message_transaction message_created userId=${user._id} conversationId=${dto.conversationId} messageId=${messageId}`,
+      );
+
+      const updateResult = await this.ConversationModel.updateOne(
+        { _id: conversation._id },
+        {
+          lastMessage: content,
+          lastMessageAt: new Date(),
+          $inc: isCustomer ? { unreadByBusinessman: 1 } : { unreadByCustomer: 1 },
+        },
+        { session },
+      );
+
+      this.logger.log(
+        `send_message_transaction conversation_updated userId=${user._id} conversationId=${dto.conversationId} matched=${updateResult.matchedCount} modified=${updateResult.modifiedCount}`,
+      );
+
+      await session.commitTransaction();
+      this.logger.log(
+        `send_message_transaction commit x  userId=${user._id} conversationId=${dto.conversationId} messageId=${messageId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `send_message_transaction abort userId=${user._id} conversationId=${dto.conversationId} error=${error?.message}`,
+        error?.stack,
+      );
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      throw error;
+    } finally {
+      await session.endSession();
+      this.logger.log(
+        `send_message_transaction end userId=${user._id} conversationId=${dto.conversationId}`,
+      );
+    }
+
+    const savedMessage = await this.MessageModel.findById(messageId)
       .populate('sender', 'name image role')
       .populate('receiver', 'name image role')
       .lean();
@@ -143,24 +188,62 @@ export class ChatService {
   }
 
   async markRead(user: AuthUser, conversationId: string) {
+    this.logger.log(`mark_read_service start userId=${user._id} conversationId=${conversationId}`);
     const conversation: any = await this.ensureConversationAccess(user, conversationId);
     const isCustomer = conversation.customer.toString() === user._id;
+    const session = await this.connection.startSession();
 
-    await this.MessageModel.updateMany(
-      {
-        conversation: conversationId,
-        receiver: user._id,
-        readAt: null,
-      },
-      { readAt: new Date() },
-    );
+    try {
+      this.logger.log(
+        `mark_read_transaction begin userId=${user._id} conversationId=${conversationId}`,
+      );
+      session.startTransaction();
 
-    await this.ConversationModel.updateOne(
-      { _id: conversationId },
-      isCustomer ? { unreadByCustomer: 0 } : { unreadByBusinessman: 0 },
-    );
+      const messageUpdateResult = await this.MessageModel.updateMany(
+        {
+          conversation: conversationId,
+          receiver: user._id,
+          readAt: null,
+        },
+        { readAt: new Date() },
+        { session },
+      );
 
-    return { success: true };
+      this.logger.log(
+        `mark_read_transaction messages_updated userId=${user._id} conversationId=${conversationId} matched=${messageUpdateResult.matchedCount} modified=${messageUpdateResult.modifiedCount}`,
+      );
+
+      const conversationUpdateResult = await this.ConversationModel.updateOne(
+        { _id: conversationId },
+        isCustomer ? { unreadByCustomer: 0 } : { unreadByBusinessman: 0 },
+        { session },
+      );
+
+      this.logger.log(
+        `mark_read_transaction conversation_updated userId=${user._id} conversationId=${conversationId} matched=${conversationUpdateResult.matchedCount} modified=${conversationUpdateResult.modifiedCount}`,
+      );
+
+      await session.commitTransaction();
+      this.logger.log(
+        `mark_read_transaction commit userId=${user._id} conversationId=${conversationId}`,
+      );
+
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `mark_read_transaction abort userId=${user._id} conversationId=${conversationId} error=${error?.message}`,
+        error?.stack,
+      );
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      throw error;
+    } finally {
+      await session.endSession();
+      this.logger.log(
+        `mark_read_transaction end userId=${user._id} conversationId=${conversationId}`,
+      );
+    }
   }
 
   async ensureConversationAccess(user: AuthUser, conversationId: string) {

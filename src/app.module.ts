@@ -14,6 +14,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import redisConfig from './config/redis.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '@/auth/auth.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
@@ -21,6 +22,8 @@ import {JwtAuthGuard} from "@/auth/passport/jwt-auth.guard"
 import { MailerModule } from '@nestjs-modules/mailer';
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter"
 import { TransformInterceptor } from './core/transform.interceptor';
+import { PerformanceInterceptor } from './core/performance.interceptor';
+import { CacheService } from './shared/services/cache.service';
 import { VouchersModule } from './modules/voucher/vouchers.module';
 import { VoucherItemsModule } from './modules/voucher.items/voucher.items.module';
 import { CouponsModule } from './modules/coupons/coupons.module';
@@ -28,6 +31,7 @@ import { CouponItemsModule } from './modules/coupon.items/coupon.items.module';
 import { RolesGuard } from './auth/passport/roles.guard';
 import { ErrorMessageModule } from './modules/error.message/error.message.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
 import {  QueueModule } from './modules/queue/queue.module';
 import { BullModule } from '@nestjs/bullmq';
 import { bullConfig } from './config/bull.config';
@@ -52,9 +56,25 @@ import { ChatModule } from './modules/chat/chat.module';
     CouponsModule,
     CouponItemsModule, 
     ConfigModule.forRoot({isGlobal: true}),
-    CacheModule.register({
+    ConfigModule.forFeature(redisConfig),
+    CacheModule.registerAsync({
       isGlobal: true,
-      ttl: 60000,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        const redis = configService.get('redis');
+        return {
+          store: await redisStore({
+            socket: {
+              host: redis.host || 'localhost',
+              port: redis.port || 6379,
+            },
+            password: redis.password || undefined,
+            database: redis.db || 0,
+            ttl: 6000,
+          }),
+        };
+      },
+      inject: [ConfigService],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -102,6 +122,7 @@ import { ChatModule } from './modules/chat/chat.module';
   controllers: [AppController],
   providers: [
     AppService,
+    // CacheService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard
@@ -113,6 +134,10 @@ import { ChatModule } from './modules/chat/chat.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PerformanceInterceptor,
     },
    
 ],

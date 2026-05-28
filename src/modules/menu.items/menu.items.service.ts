@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MenuItem } from './schemas/menu.item.schema';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
+import { CacheService } from '@/shared/services/cache.service';
 import { Menu } from '../menus/schemas/menu.schema';
 const imgbbUploader = require("imgbb-uploader");
 
@@ -14,6 +15,7 @@ export class MenuItemsService {
     private configService: ConfigService,
     @InjectModel(MenuItem.name) private MenuItemModel: Model<MenuItem>,
     @InjectModel(Menu.name) private MenuModel: Model<Menu>,
+    private cacheService: CacheService,
 
    ){}
 
@@ -39,10 +41,17 @@ export class MenuItemsService {
     const menuItems  = await this.MenuItemModel.create({
       nameItemMenu, description , sellingPrice, fixedPrice, menuId, deleteUrl, nameMenu, image, status, quantity, remain: quantity
     })
+
+    // Invalidate menu caches
+    try {
+      await this.cacheService.delPattern('menu:*');
+    } catch (e) {
+      // ignore cache errors
+    }
+
     return {
       _id: menuItems._id,
     }
-
   }
 
   async create(data: any){
@@ -76,11 +85,11 @@ export class MenuItemsService {
 
 
   findAll() {
-    return `This action returns all menuItems`;
+    return this._findAllCached();
   }
 
   findOne(id: number) {
-    return `This action returns a 121 menuItem`;
+    return this._findOneCached(id);
   }
 
   async update(dataUpdate: any) {
@@ -141,5 +150,49 @@ export class MenuItemsService {
       }
     }
     return "Something wrong"
+  }
+
+  private async _findAllCached() {
+    const cacheKey = 'menu:all';
+    try {
+      const cached = await this.cacheService.get<any>(cacheKey);
+      if (cached) return cached;
+    } catch (e) {
+      // ignore cache read errors
+    }
+
+    const data = await this.MenuItemModel.find({ status: 'PUBLIC' }).lean().exec();
+
+    try {
+      const redisCfg = this.configService.get('redis');
+      const ttl = redisCfg?.ttl?.productsList || 60 * 60 * 1000;
+      await this.cacheService.set(cacheKey, data, ttl);
+    } catch (e) {
+      // ignore cache set errors
+    }
+
+    return data;
+  }
+
+  private async _findOneCached(id: number | string) {
+    const cacheKey = `menu:item:${id}`;
+    try {
+      const cached = await this.cacheService.get<any>(cacheKey);
+      if (cached) return cached;
+    } catch (e) {
+      // ignore cache read errors
+    }
+
+    const item = await this.MenuItemModel.findById(id).lean().exec();
+
+    try {
+      const redisCfg = this.configService.get('redis');
+      const ttl = redisCfg?.ttl?.product || 30 * 60 * 1000;
+      if (item) await this.cacheService.set(cacheKey, item, ttl);
+    } catch (e) {
+      // ignore cache set errors
+    }
+
+    return item;
   }
 }

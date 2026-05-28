@@ -9,6 +9,8 @@ export class QueueService {
   constructor(
     @InjectQueue(QUEUE_NAMES.EMAIL) private emailQueue: Queue,
     @InjectQueue(QUEUE_NAMES.REPORT) private reportQueue: Queue,
+    @InjectQueue(QUEUE_NAMES.INVENTORY) private inventoryQueue: Queue,
+    @InjectQueue(QUEUE_NAMES.INVOICE) private invoiceQueue: Queue,
   ) {}
 
   async testReport() {
@@ -30,12 +32,31 @@ export class QueueService {
   }
 
   async scheduleEmail(payload: any, delayMs: number) {
-    return this.emailQueue.add('send-email', payload, { delay: delayMs });
+    return this.emailQueue.add('send-email', payload, {
+      delay: delayMs,
+      priority: 2,
+    });
   }
 
   async generateDailyReport(payload: any) {
     return this.reportQueue.add('generate-report', payload, {
-      repeat: { pattern: '0 0 * * *' },
+      repeat: { every: 24 * 60 * 60 * 1000 },
+    });
+  }
+
+  async enqueueInventoryUpdate(payload: any) {
+    return this.inventoryQueue.add('inventory-update', payload, {
+      priority: 2,
+      removeOnComplete: 50,
+      attempts: 2,
+    });
+  }
+
+  async enqueueInvoiceGeneration(payload: any) {
+    return this.invoiceQueue.add('generate-invoice', payload, {
+      priority: 1,
+      removeOnComplete: 50,
+      attempts: 3,
     });
   }
 }

@@ -10,6 +10,8 @@ import { Voucher, VoucherSchema } from '../voucher/schemas/voucher.schema';
 import { CouponItem, CouponItemSchema } from '../coupon.items/schemas/coupon.item.schema';
 import { VoucherItem, VoucherItemSchema } from '../voucher.items/schemas/voucher.item.schema';
 import { MenuItem, MenuItemSchema } from '../menu.items/schemas/menu.item.schema';
+import { QueueModule } from '../queue/queue.module';
+import { OrderValidatorService } from '@/shared/services/order-validator.service';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -26,8 +28,10 @@ import { MenuItem, MenuItemSchema } from '../menu.items/schemas/menu.item.schema
 
 
 
-  ])],
+  ]),
+    QueueModule,
+  ],
   controllers: [OrdersController],
-  providers: [OrdersService],
+  providers: [OrdersService, OrderValidatorService],
 })
 export class OrdersModule {}
